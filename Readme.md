@@ -6,7 +6,7 @@ This repository is a monorepo that contains both backend and frontend applicatio
 
 ### Prerequisites
 
-#### MacOs / Linux
+#### Linux / macOS
 
 ```sh
 # Download and install nvm:
@@ -27,7 +27,7 @@ npm -v # Should print "11.9.0".
 # Install pnpm
 $ npm install -g pnpm@latest-10
 
-# Install turbo
+# Install turbo for better developer experience (optional)
 $ pnpm add turbo --global
 ```
 
@@ -49,6 +49,6 @@ npm -v # Should print "11.9.0".
 # Install pnpm
 $ npm install -g pnpm@latest-10
 
-# Install turbo
+# Install turbo for better developer experience (optional)
 $ pnpm add turbo --global
 ```
