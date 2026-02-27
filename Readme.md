@@ -29,6 +29,9 @@ $ npm install -g pnpm@latest-10
 
 # Install turbo for better developer experience (optional)
 $ pnpm add turbo --global
+
+# Install all dependencies
+$ pnpm i
 ```
 
 #### Windows
@@ -51,4 +54,7 @@ $ npm install -g pnpm@latest-10
 
 # Install turbo for better developer experience (optional)
 $ pnpm add turbo --global
+
+# Install all dependencies
+$ pnpm i
 ```
