@@ -9,7 +9,7 @@
     "test": "turbo run test",
     "test:projects": "vitest run",
     "test:projects:watch": "vitest --watch",
-    "view-report": "turbo run view-report"
+    "view-report": "turbo run view-report && open packages/vitest-config/coverage/report/index.html"
   },
   "devDependencies": {
     "@repo/vitest-config": "workspace:*",
