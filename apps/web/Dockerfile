@@ -19,7 +19,7 @@ RUN turbo prune web --docker
 FROM base AS builder
 # First install the dependencies (as they change less often)
 COPY --from=prepare /app/out/json/ .
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 # Build the project
 COPY --from=prepare /app/out/full/ .
 
@@ -46,7 +46,7 @@ COPY pnpm-lock.yaml package.json pnpm-workspace.yaml turbo.json ./
 
 COPY apps ./apps
 
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 
 COPY . .
 
