@@ -33,23 +33,15 @@ COPY --from=prepare /app/out/full/ .
 RUN pnpm turbo build
 
 # Development target
-FROM node:${NODE_VERSION}-alpine AS development
+FROM builder AS development
 
 WORKDIR /app
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-
 RUN corepack enable
 
-COPY pnpm-lock.yaml package.json pnpm-workspace.yaml turbo.json ./
-
-COPY apps ./apps
-
-RUN pnpm install --frozen-lockfile
-
-COPY . .
-
+COPY --from=builder /app ./
 CMD ["pnpm", "--filter", "api", "dev"]
 
 # Production target
@@ -60,6 +52,6 @@ WORKDIR /app
 RUN addgroup --system --gid 1001 expressjs
 RUN adduser --system --uid 1001 expressjs
 USER expressjs
-COPY --from=builder /app .
 
+COPY --from=builder /app .
 CMD ["node", "apps/api/dist/index.js"]
