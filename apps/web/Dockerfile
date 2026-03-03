@@ -17,6 +17,8 @@ RUN turbo prune web --docker
 
 # ---
 FROM base AS builder
+
+WORKDIR /app
 # First install the dependencies (as they change less often)
 COPY --from=prepare /app/out/json/ .
 RUN pnpm install --frozen-lockfile
@@ -33,8 +35,7 @@ COPY --from=prepare /app/out/full/ .
 RUN pnpm turbo build
 
 # Development target
-FROM node:${NODE_VERSION}-alpine AS development
-
+FROM builder AS development
 
 WORKDIR /app
 
