@@ -35,21 +35,14 @@ RUN pnpm turbo build
 # Development target
 FROM node:${NODE_VERSION}-alpine AS development
 
+
 WORKDIR /app
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-
 RUN corepack enable
 
-COPY pnpm-lock.yaml package.json pnpm-workspace.yaml turbo.json ./
-
-COPY apps ./apps
-
-RUN pnpm install --frozen-lockfile
-
-COPY . .
-
+COPY --from=builder /app ./
 CMD ["pnpm", "--filter", "web", "dev"]
 
 # ---
