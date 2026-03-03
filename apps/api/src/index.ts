@@ -4,7 +4,7 @@ const app = express();
 const port = Number(process.env.PORT) || 8000;
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("Hello world!");
+  res.status(200).json({ message: "Server is running" });
 });
 
 app.listen(port, () => {

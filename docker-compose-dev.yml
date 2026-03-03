@@ -10,6 +10,10 @@ services:
       - 5173:5173
     networks:
       - ttt_network
+    volumes:
+      - ./apps/web:/app/apps/web
+      - ./packages:/app/packages
+      - /app/node_modules
   api:
     container_name: api
     build:
@@ -21,6 +25,10 @@ services:
       - 8000:8000
     networks:
       - ttt_network
+    volumes:
+      - ./apps/api:/app/apps/api
+      - ./packages:/app/packages
+      - /app/node_modules
 networks:
   ttt_network:
     external: true
