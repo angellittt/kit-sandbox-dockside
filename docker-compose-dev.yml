@@ -31,4 +31,3 @@ services:
       - /app/node_modules
 networks:
   ttt_network:
-    external: true
