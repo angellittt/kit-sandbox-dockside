@@ -2,12 +2,18 @@
   "packageManager": "pnpm@10.30.3",
   "private": true,
   "devDependencies": {
+    "@types/cross-spawn": "^6.0.6",
+    "tsx": "^4.21.0",
     "turbo": "^2.8.12"
   },
   "scripts": {
+    "prepare": "tsx one-time-setup.ts",
     "dev": "turbo dev",
     "build": "turbo build",
     "compose:dev:up": "docker compose -f docker-compose-dev.yml up --build",
     "compose:prod:up": "docker compose -f docker-compose-prod.yml up --build"
+  },
+  "dependencies": {
+    "cross-spawn": "^7.0.6"
   }
 }

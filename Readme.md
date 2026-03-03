@@ -33,8 +33,8 @@ $ pnpm add turbo --global
 # Install all dependencies
 $ pnpm i
 
-# Run setup script to create/install any missing dependencies
-$ ./setup.sh
+# Setup local environment
+$ pnpm prepare
 ```
 
 #### Windows
@@ -61,8 +61,8 @@ $ pnpm add turbo --global
 # Install all dependencies
 $ pnpm i
 
-# Given ./setup.sh is not available for windows machines, you'll have to run the following commands
-$ docker network create ttt_network
+# Setup local environment
+$ pnpm prepare
 ```
 
 ### Docker & Containerization
