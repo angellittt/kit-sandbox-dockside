@@ -32,6 +32,9 @@ $ pnpm add turbo --global
 
 # Install all dependencies
 $ pnpm i
+
+# Run setup script to create/install any missing dependencies
+$ ./setup.sh
 ```
 
 #### Windows
@@ -57,4 +60,33 @@ $ pnpm add turbo --global
 
 # Install all dependencies
 $ pnpm i
+
+# Given ./setup.sh is not available for windows machines, you'll have to run the following commands
+$ docker network create ttt_network
 ```
+
+### Docker & Containerization
+
+We recommend getting familiar with Docker and Linux containers. If you are new to these technologies, check out this [free ebook](https://github.com/bobbyiliev/introduction-to-docker-ebook).
+
+#### Running Locally with Docker
+
+Both the `api` and `web` applications are dockerized. To start local development using Docker, run:
+
+```sh
+# Start API and Web containers in development mode
+$ pnpm compose:dev:up
+```
+
+Access the web app at [http://localhost:5173](http://localhost:5173) and the API at [http://localhost:8000](http://localhost:8000).
+
+#### Running in Production with Docker
+
+To start the containers using a production-ready build, you can use:
+
+```sh
+# Start API and Web containers in production mode
+$ pnpm compose:prod:up
+```
+
+Access the web app at [http://localhost](http://localhost) or [https://localhost](https://localhost), and the API at [http://localhost:8080](http://localhost:8080).
