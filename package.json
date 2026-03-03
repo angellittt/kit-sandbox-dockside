@@ -1,13 +1,19 @@
 {
   "packageManager": "pnpm@10.30.3",
   "private": true,
-  "devDependencies": {
-    "turbo": "^2.8.12"
-  },
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
     "compose:dev:up": "docker compose -f docker-compose-dev.yml up --build",
-    "compose:prod:up": "docker compose -f docker-compose-prod.yml up --build"
+    "compose:prod:up": "docker compose -f docker-compose-prod.yml up --build",
+    "test": "turbo run test",
+    "test:projects": "vitest run",
+    "test:projects:watch": "vitest --watch",
+    "view-report": "turbo run view-report"
+  },
+  "devDependencies": {
+    "@repo/vitest-config": "workspace:*",
+    "turbo": "^2.8.12",
+    "vitest": "^4.0.18"
   }
 }

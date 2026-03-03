@@ -32,6 +32,9 @@ $ pnpm add turbo --global
 
 # Install all dependencies
 $ pnpm i
+
+# Build shared packages
+$ pnpm build
 ```
 
 #### Windows
@@ -57,6 +60,9 @@ $ pnpm add turbo --global
 
 # Install all dependencies
 $ pnpm i
+
+# Build shared packages
+$ pnpm build
 ```
 
 ### Docker & Containerization
