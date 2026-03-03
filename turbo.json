@@ -8,9 +8,7 @@
     },
     "build": {
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": ["dist/**", ".next/**", "!.next/cache/**", "public/dist/**"],
-      "dependsOn": ["^build"],
-      "env": ["NEXT_PUBLIC_API_HOST"]
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**", "public/dist/**"]
     }
   }
 }

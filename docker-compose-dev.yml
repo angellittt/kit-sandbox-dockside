@@ -14,6 +14,7 @@ services:
       - ./apps/web:/app/apps/web
       - ./packages:/app/packages
       - /app/node_modules
+      - /app/apps/web/node_modules
   api:
     container_name: api
     build:
@@ -29,5 +30,6 @@ services:
       - ./apps/api:/app/apps/api
       - ./packages:/app/packages
       - /app/node_modules
+      - /app/apps/api/node_modules
 networks:
   ttt_network:

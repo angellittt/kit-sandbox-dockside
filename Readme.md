@@ -32,9 +32,6 @@ $ pnpm add turbo --global
 
 # Install all dependencies
 $ pnpm i
-
-# Setup local environment
-$ pnpm prepare
 ```
 
 #### Windows
@@ -60,9 +57,6 @@ $ pnpm add turbo --global
 
 # Install all dependencies
 $ pnpm i
-
-# Setup local environment
-$ pnpm prepare
 ```
 
 ### Docker & Containerization
