@@ -53,7 +53,7 @@ COPY . .
 CMD ["pnpm", "--filter", "web", "dev"]
 
 # ---
-FROM caddy:2-alpine AS runner
+FROM caddy:2-alpine AS production
 
 COPY --from=prepare /app/apps/web/Caddyfile /etc/caddy/Caddyfile
 
