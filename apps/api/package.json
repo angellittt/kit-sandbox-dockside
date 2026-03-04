@@ -17,7 +17,8 @@
   },
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "test": "vitest"
   },
   "packageManager": "pnpm@10.30.3"
 }

@@ -16,6 +16,6 @@ describe("App", () => {
     const user = userEvent.setup();
     await user.click(button);
     expect(count.textContent).toBe("1");
-    expect(button).toBeInTheDocument();
+    expect(button).not.toBeDisabled();
   });
 });
