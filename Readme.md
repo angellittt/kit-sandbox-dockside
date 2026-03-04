@@ -58,3 +58,15 @@ $ pnpm add turbo --global
 # Install all dependencies
 $ pnpm i
 ```
+
+## Rationale
+
+We believe that it's important to document the reason behind some of the key decisions we made in this project.
+
+### Pnpm + TS + Turborepo
+
+Overall, we aimed to create a codebase with as few dependencies as possible and minimal configuration. Our goal is for developers, even those with little or no experience with monorepos, to be able to clone the template and start coding immediately.
+
+- **Pnpm:** Fast, efficient package management with great monorepo support.
+- **Typescript:** Strong typing and tooling for safer code.
+- **Turborepo:** Minimal configuration, easy setup, and less complexity than alternatives like NX.
