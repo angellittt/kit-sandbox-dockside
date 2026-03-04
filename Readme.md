@@ -84,3 +84,19 @@ $ pnpm compose:prod:up
 ```
 
 Access the web app at [http://localhost](http://localhost) or [https://localhost](https://localhost), and the API at [http://localhost:8080](http://localhost:8080).
+
+## Rationale
+
+We believe that it's important to document the reason behind some of the key decisions we made in this project.
+
+### Pnpm + TS + Turborepo
+
+Overall, we aimed to create a codebase with as few dependencies as possible and minimal configuration. Our goal is for developers, even those with little or no experience with monorepos, to be able to clone the template and start coding immediately.
+
+- **Pnpm:** Fast, efficient package management with great monorepo support.
+- **Typescript:** Strong typing and tooling for safer code.
+- **Turborepo:** Minimal configuration, easy setup, and less complexity than alternatives like NX.
+
+### Docker
+
+We want to ensure the code works everywhere and can be easily versioned. Developers will likely need to interact with a database server, so we want them to be able to simply add it to the Docker Compose files instead of installing it on their own systems.
