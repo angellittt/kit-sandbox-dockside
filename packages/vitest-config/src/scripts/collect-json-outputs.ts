@@ -41,7 +41,7 @@ async function collectCoverageFiles() {
             const directoryName = path.basename(match);
             const destinationFile = path.join(
               destinationDir,
-              `${directoryName}.json`
+              `${directoryName}.json`,
             );
 
             await fs.copyFile(coverageFilePath, destinationFile);
@@ -58,16 +58,17 @@ async function collectCoverageFiles() {
       const normalized = path.normalize(str);
       const parts = normalized.split(path.sep);
       const filteredParts = parts.filter(
-        (part) => part !== ".." && part !== "."
+        (part) => part !== ".." && part !== ".",
       );
       return filteredParts.join(path.sep);
     };
 
+    console.log(`Total directories found: ${allDirectories.length}`);
     if (directoriesWithCoverage.length > 0) {
       console.log(
         `Found coverage.json in: ${directoriesWithCoverage
           .map(replaceDotPatterns)
-          .join(", ")}`
+          .join(", ")}`,
       );
     }
 

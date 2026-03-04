@@ -15,14 +15,14 @@ export default defineConfig({
         root: "./apps/api",
         test: {
           ...sharedConfig.test,
-          setupFiles: "./api/src/tests/setup.ts",
+          setupFiles: "./src/tests/setup.ts",
         },
       },
       {
         root: "./apps/web",
         test: {
           ...sharedConfig.test,
-          setupFiles: "./web/src/tests/setup.ts",
+          setupFiles: "./src/tests/setup.ts",
           environment: "jsdom",
         },
       },
