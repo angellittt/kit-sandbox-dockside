@@ -9,14 +9,10 @@
       "inputs": ["coverage/raw/**"],
       "outputs": ["coverage/merged/**"]
     },
-    "report": {
+    "test-report": {
       "dependsOn": ["merge-json-reports"],
       "inputs": ["coverage/merge"],
       "outputs": ["coverage/report/**"]
-    },
-    "view-report": {
-      "dependsOn": ["report"],
-      "cache": false
     }
   }
 }

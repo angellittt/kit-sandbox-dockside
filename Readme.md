@@ -91,6 +91,23 @@ $ pnpm compose:prod:up
 
 Access the web app at [http://localhost](http://localhost) or [https://localhost](https://localhost), and the API at [http://localhost:8080](http://localhost:8080).
 
+### Executing tests
+
+In the workspace directory, you can execute the following commands:
+
+```sh
+# Test all applications and packages using turbo (faster due to turbo cache)
+$ pnpm test
+# Execute all tests
+$ pnpm test:projects
+# Execute all tests with watch mode
+$ pnpm test:projects:watch
+# Creates a test coverage report
+$ pnpm test:report
+# Creates a test coverage report and opens it on your browser
+$ pnpm test:report:view
+```
+
 ## Rationale
 
 We believe that it's important to document the reason behind some of the key decisions we made in this project.
@@ -106,3 +123,7 @@ Overall, we aimed to create a codebase with as few dependencies as possible and 
 ### Docker
 
 We want to ensure the code works everywhere and can be easily versioned. Developers will likely need to interact with a database server, so we want them to be able to simply add it to the Docker Compose files instead of installing it on their own systems.
+
+### Vitest
+
+We want to encourage developers to write tests more often. Most frontend developers have experience with Vitest, while most backend developers are familiar with Jest. We chose Vitest because its API is fully compatible with Jest, and it is much easier to use with ESM modules.
