@@ -49,8 +49,8 @@ FROM node:${NODE_VERSION}-alpine AS production
 WORKDIR /app
 
 # Don't run production as root
-RUN addgroup --system --gid 1001 expressjs
-RUN adduser --system --uid 1001 expressjs
+RUN addgroup -S -g 1001 expressjs
+RUN adduser -S -u 1001 -G expressjs expressjs
 USER expressjs
 
 COPY --from=builder /app .
