@@ -1,12 +1,12 @@
 import { useCallback, useMemo, useState } from "react";
 
-type UseDisclosureReturn = {
+export interface UseDisclosureReturn {
   isOpen: boolean;
   onClose: () => void;
   onOpen: () => void;
   onToggle: () => void;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-};
+}
 
 const useDisclosure = (initialState: boolean = false): UseDisclosureReturn => {
   const [isOpen, setIsOpen] = useState<boolean>(initialState);
@@ -24,7 +24,7 @@ const useDisclosure = (initialState: boolean = false): UseDisclosureReturn => {
 
   return useMemo(
     () => ({ isOpen, onClose, onOpen, onToggle, setIsOpen }),
-    [isOpen, onClose, onOpen, onToggle, setIsOpen],
+    [isOpen, onClose, onOpen, onToggle, setIsOpen]
   );
 };
 
