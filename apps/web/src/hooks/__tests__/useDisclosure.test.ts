@@ -1,19 +1,19 @@
-import { describe, expect, it } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
-import useDisclosure from '../useDisclosure';
+import { describe, expect, it } from "vitest";
+import { renderHook, act } from "@testing-library/react";
+import useDisclosure from "../useDisclosure";
 
-describe('useDisclosure', () => {
-  it('should initialize with default value (false)', () => {
+describe("useDisclosure", () => {
+  it("should initialize with default value (false)", () => {
     const { result } = renderHook(() => useDisclosure());
     expect(result.current.isOpen).toBe(false);
   });
 
-  it('should initialize with true', () => {
+  it("should initialize with true", () => {
     const { result } = renderHook(() => useDisclosure(true));
     expect(result.current.isOpen).toBe(true);
   });
 
-  it('should open', () => {
+  it("should open", () => {
     const { result } = renderHook(() => useDisclosure());
     act(() => {
       result.current.onOpen();
@@ -21,7 +21,7 @@ describe('useDisclosure', () => {
     expect(result.current.isOpen).toBe(true);
   });
 
-  it('should close', () => {
+  it("should close", () => {
     const { result } = renderHook(() => useDisclosure(true));
     act(() => {
       result.current.onClose();
@@ -29,7 +29,7 @@ describe('useDisclosure', () => {
     expect(result.current.isOpen).toBe(false);
   });
 
-  it('should toggle', () => {
+  it("should toggle", () => {
     const { result } = renderHook(() => useDisclosure(false));
     act(() => {
       result.current.onToggle();
@@ -41,7 +41,7 @@ describe('useDisclosure', () => {
     expect(result.current.isOpen).toBe(false);
   });
 
-  it('should set isOpen directly', () => {
+  it("should set isOpen directly", () => {
     const { result } = renderHook(() => useDisclosure());
     act(() => {
       result.current.setIsOpen(true);
