@@ -1,8 +1,15 @@
 import { useCallback, useMemo, useState } from "react";
 
-const useDisclosure = (initialState = false) => {
-  const [isOpen, setIsOpen] = useState(initialState);
+type UseDisclosureReturn = {
+  isOpen: boolean;
+  onClose: () => void;
+  onOpen: () => void;
+  onToggle: () => void;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
+const useDisclosure = (initialState: boolean = false): UseDisclosureReturn => {
+  const [isOpen, setIsOpen] = useState<boolean>(initialState);
   const onClose = useCallback(() => {
     setIsOpen(false);
   }, [setIsOpen]);
