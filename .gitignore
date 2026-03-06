@@ -5,7 +5,7 @@ node_modules
 .pnp
 .pnp.js
 
-# Local env files
+# Local environment files
 .env
 .env.local
 .env.development.local
@@ -17,13 +17,13 @@ node_modules
 # Testing
 coverage
 
-# Turbo
+# Turborepo cache
 .turbo
 
 # Vercel
 .vercel
 
-# Build Outputs
+# Build outputs
 .next/
 out/
 build
@@ -41,7 +41,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 
-# Editor directories and files
+# Editor directories, OS & misc
 .vscode/*
 !.vscode/extensions.json
 .idea

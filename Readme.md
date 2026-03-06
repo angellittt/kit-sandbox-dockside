@@ -59,6 +59,32 @@ $ pnpm add turbo --global
 $ pnpm i
 ```
 
+### Docker & Containerization
+
+We recommend getting familiar with Docker and Linux containers. If you are new to these technologies, check out this [free ebook](https://github.com/bobbyiliev/introduction-to-docker-ebook).
+
+#### Running Locally with Docker
+
+Both the `api` and `web` applications are dockerized. To start local development using Docker, run:
+
+```sh
+# Start API and Web containers in development mode
+$ pnpm compose:dev:up
+```
+
+Access the web app at [http://localhost:5173](http://localhost:5173) and the API at [http://localhost:8000](http://localhost:8000).
+
+#### Running in Production with Docker
+
+To start the containers using a production-ready build, you can use:
+
+```sh
+# Start API and Web containers in production mode
+$ pnpm compose:prod:up
+```
+
+Access the web app at [http://localhost](http://localhost) or [https://localhost](https://localhost), and the API at [http://localhost:8080](http://localhost:8080).
+
 ## Rationale
 
 We believe that it's important to document the reason behind some of the key decisions we made in this project.
@@ -70,3 +96,7 @@ Overall, we aimed to create a codebase with as few dependencies as possible and 
 - **Pnpm:** Fast, efficient package management with great monorepo support.
 - **Typescript:** Strong typing and tooling for safer code.
 - **Turborepo:** Minimal configuration, easy setup, and less complexity than alternatives like NX.
+
+### Docker
+
+We want to ensure the code works everywhere and can be easily versioned. Developers will likely need to interact with a database server, so we want them to be able to simply add it to the Docker Compose files instead of installing it on their own systems.
