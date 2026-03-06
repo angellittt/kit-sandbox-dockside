@@ -1,14 +1,22 @@
-import { expect, test } from "vitest";
-import { app } from "../index.js";
+import { afterAll, describe, expect, test } from "vitest";
+import axios from "axios";
+import { startServer } from "../app.js";
+import { getAddress } from "../utils/index.js";
+import { ServerConfig } from "../types/index.js";
 
-// This test is temporary and will be completely replaced in the next PR. I'm just adding here for to test coverage report
-test("healthcheck works", async () => {
-  app;
-  const delay = (ms: number) =>
-    new Promise((resolve) => setTimeout(resolve, ms));
-  await delay(500);
-  const response = await fetch("http://localhost:8000/");
-  const json = await response.json();
-  expect(json.message).toBe("Server is running!");
-  expect(response.status).toBe(200);
+describe("API tests", async () => {
+  const config: ServerConfig = {
+    port: 8001,
+    host: "0.0.0.0",
+  };
+  const server = await startServer(config);
+  test("healthcheck works", async () => {
+    const address = getAddress(server);
+    const { status, data } = await axios.get(`${address}/api/v1/healthcheck`);
+    expect(status).toBe(200);
+    expect(data).toEqual({ status: "OK" });
+  });
+  afterAll(() => {
+    server.close();
+  });
 });
