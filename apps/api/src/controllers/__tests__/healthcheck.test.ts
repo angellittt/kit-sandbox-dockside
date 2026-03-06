@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { getTestAddress } from "../tests/utils.js";
+import { getTestAddress } from "../../tests/utils.js";
 import axios from "axios";
 
 describe("API tests", async () => {
@@ -8,6 +8,9 @@ describe("API tests", async () => {
       `${getTestAddress()}/api/v1/healthcheck`,
     );
     expect(status).toBe(200);
-    expect(data).toEqual({ status: "OK" });
+    const { uptime, timestamp, status: healthStatus } = data;
+    expect(healthStatus).toBe("OK");
+    expect(typeof uptime).toBe("number");
+    expect(typeof timestamp).toBe("number");
   });
 });
