@@ -69,7 +69,7 @@ $ pnpm build
 
 We recommend getting familiar with Docker and Linux containers. If you are new to these technologies, check out this [free ebook](https://github.com/bobbyiliev/introduction-to-docker-ebook).
 
-#### Running Locally with Docker
+#### Local development with Docker
 
 Both the `api` and `web` applications are dockerized. To start local development using Docker, run:
 
@@ -80,7 +80,7 @@ $ pnpm compose:dev:up
 
 Access the web app at [http://localhost:5173](http://localhost:5173) and the API at [http://localhost:8000](http://localhost:8000).
 
-#### Running in Production with Docker
+#### Running with Docker
 
 To start the containers using a production-ready build, you can use:
 
