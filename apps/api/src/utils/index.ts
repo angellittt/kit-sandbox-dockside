@@ -41,3 +41,17 @@ export const checkPortAvailable = async (port: number, host: string) => {
     server.listen(port, host);
   });
 };
+
+/**
+ * Gracefully closes the given HTTP server and waits until it is fully closed.
+ *
+ * @param server - The HTTP server instance.
+ * @returns Promise<void> Resolves when the server is closed.
+ */
+export const closeServer = async (server: Server) =>
+  new Promise<void>((resolve, reject) => {
+    server.close((err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });

@@ -1,12 +1,21 @@
-import express, { Request, Response } from "express";
+import { startServer } from "./app.js";
+import { ServerConfig } from "./types/index.js";
 
-export const app = express();
-const port = Number(process.env.PORT) || 8000;
+const port = process.env.PORT ? Number(process.env.PORT) : 8000;
+const host = process.env.HOST ?? "0.0.0.0";
 
-app.get("/", (req: Request, res: Response) => {
-  res.status(200).json({ message: "Server is running!" });
-});
+const config: ServerConfig = {
+  port,
+  host,
+};
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-});
+const main = async () => {
+  try {
+    await startServer(config);
+  } catch (error) {
+    console.error("Error starting server:", error);
+    process.exit(1);
+  }
+};
+
+main();

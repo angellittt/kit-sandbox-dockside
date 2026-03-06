@@ -5,5 +5,6 @@ export default mergeConfig(uiConfig, {
   test: {
     environment: "jsdom",
     setupFiles: "./src/tests/setup.ts",
+    exclude: ["dist", "node_modules"],
   },
 });

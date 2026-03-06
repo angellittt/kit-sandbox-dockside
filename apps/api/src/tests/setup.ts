@@ -1,9 +1,10 @@
 import { afterAll, beforeAll } from "vitest";
+import { closeTestingServer, startTestingServer } from "./utils.js";
 
-beforeAll(() => {
-  console.log("Starting api tests...");
+beforeAll(async () => {
+  await startTestingServer();
 });
 
-afterAll(() => {
-  console.log("Api tests finished");
+afterAll(async () => {
+  await closeTestingServer();
 });
