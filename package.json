@@ -5,7 +5,7 @@
     "dev": "turbo dev",
     "build": "turbo build",
     "compose:dev:up": "docker compose -f docker-compose-dev.yml up --build",
-    "compose:prod:up": "docker compose -f docker-compose-prod.yml up --build",
+    "compose:up": "docker compose -f docker-compose.yml up --build",
     "test": "turbo run test",
     "test:projects": "vitest run",
     "test:projects:watch": "vitest --watch",

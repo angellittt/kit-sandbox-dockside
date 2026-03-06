@@ -85,8 +85,8 @@ Access the web app at [http://localhost:5173](http://localhost:5173) and the API
 To start the containers using a production-ready build, you can use:
 
 ```sh
-# Start API and Web containers in production mode
-$ pnpm compose:prod:up
+# Start API and Web containers
+$ pnpm compose:up
 ```
 
 Access the web app at [http://localhost](http://localhost) or [https://localhost](https://localhost), and the API at [http://localhost:8080](http://localhost:8080).
