@@ -91,6 +91,17 @@ $ pnpm compose:up
 
 Access the web app at [http://localhost](http://localhost) or [https://localhost](https://localhost), and the API at [http://localhost:8080](http://localhost:8080).
 
+### Local development without Docker
+
+We do not recommend this approach, but we also understand that Docker has a learning curve. If you are unfamiliar with Docker and just want to develop locally:
+
+```sh
+# Run api and web applications locally
+$ pnpm dev:no-docker
+```
+
+If you are familiar with Docker and still prefer this approach, please consider opening an issue on the [repository](https://github.com/tttstudios/Fullstack-starter-template) explaining what difficulties you are experiencing.
+
 ### Executing tests
 
 In the workspace directory, you can execute the following commands:

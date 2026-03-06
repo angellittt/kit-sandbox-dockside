@@ -2,7 +2,7 @@
   "packageManager": "pnpm@10.30.3",
   "private": true,
   "scripts": {
-    "dev": "turbo dev",
+    "dev:no-docker": "turbo dev",
     "build": "turbo build",
     "compose:dev:up": "docker compose -f docker-compose-dev.yml up --build",
     "compose:up": "docker compose -f docker-compose.yml up --build",
