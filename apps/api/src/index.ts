@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 
-const app = express();
+export const app = express();
 const port = Number(process.env.PORT) || 8000;
 
 app.get("/", (req: Request, res: Response) => {

@@ -1,0 +1,18 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "collect-json-reports": {
+      "cache": false
+    },
+    "merge-json-reports": {
+      "dependsOn": ["collect-json-reports"],
+      "inputs": ["coverage/raw/**"],
+      "outputs": ["coverage/merged/**"]
+    },
+    "test-report": {
+      "dependsOn": ["merge-json-reports"],
+      "inputs": ["coverage/merged"],
+      "outputs": ["coverage/report/**"]
+    }
+  }
+}

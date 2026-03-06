@@ -32,6 +32,9 @@ $ pnpm add turbo --global
 
 # Install all dependencies
 $ pnpm i
+
+# Build shared packages
+$ pnpm build
 ```
 
 #### Windows
@@ -57,13 +60,16 @@ $ pnpm add turbo --global
 
 # Install all dependencies
 $ pnpm i
+
+# Build shared packages
+$ pnpm build
 ```
 
 ### Docker & Containerization
 
 We recommend getting familiar with Docker and Linux containers. If you are new to these technologies, check out this [free ebook](https://github.com/bobbyiliev/introduction-to-docker-ebook).
 
-#### Running Locally with Docker
+#### Local development with Docker
 
 Both the `api` and `web` applications are dockerized. To start local development using Docker, run:
 
@@ -74,16 +80,44 @@ $ pnpm compose:dev:up
 
 Access the web app at [http://localhost:5173](http://localhost:5173) and the API at [http://localhost:8000](http://localhost:8000).
 
-#### Running in Production with Docker
+#### Running with Docker
 
 To start the containers using a production-ready build, you can use:
 
 ```sh
-# Start API and Web containers in production mode
-$ pnpm compose:prod:up
+# Start API and Web containers
+$ pnpm compose:up
 ```
 
 Access the web app at [http://localhost](http://localhost) or [https://localhost](https://localhost), and the API at [http://localhost:8080](http://localhost:8080).
+
+### Local development without Docker
+
+We do not recommend this approach, but we also understand that Docker has a learning curve. If you are unfamiliar with Docker and just want to develop locally:
+
+```sh
+# Run api and web applications locally
+$ pnpm dev:no-docker
+```
+
+If you are familiar with Docker and still prefer this approach, please consider opening an issue on the [repository](https://github.com/tttstudios/Fullstack-starter-template) explaining what difficulties you are experiencing.
+
+### Executing tests
+
+In the workspace directory, you can execute the following commands:
+
+```sh
+# Test all applications and packages using turbo (faster due to turbo cache)
+$ pnpm test
+# Execute all tests
+$ pnpm test:projects
+# Execute all tests with watch mode
+$ pnpm test:projects:watch
+# Creates a test coverage report
+$ pnpm test:report
+# Creates a test coverage report and opens it on your browser
+$ pnpm test:report:view
+```
 
 ## Rationale
 
@@ -100,3 +134,7 @@ Overall, we aimed to create a codebase with as few dependencies as possible and 
 ### Docker
 
 We want to ensure the code works everywhere and can be easily versioned. Developers will likely need to interact with a database server, so we want them to be able to simply add it to the Docker Compose files instead of installing it on their own systems.
+
+### Vitest
+
+We want to encourage developers to write tests more often. Most frontend developers have experience with Vitest, while most backend developers are familiar with Jest. We chose Vitest because its API is fully compatible with Jest, and it is much easier to use with ESM modules.

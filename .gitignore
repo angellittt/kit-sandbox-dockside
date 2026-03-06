@@ -16,6 +16,8 @@ node_modules
 
 # Testing
 coverage
+coverage.json
+
 
 # Turborepo cache
 .turbo
@@ -52,3 +54,7 @@ lerna-debug.log*
 *.sw?
 .DS_Store
 *.pem
+
+
+# Docker volumes
+volumes/

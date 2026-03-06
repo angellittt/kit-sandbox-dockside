@@ -1,11 +1,10 @@
 services:
   web:
-    container_name: web
+    container_name: web_dev
     build:
       context: .
       dockerfile: ./apps/web/Dockerfile
       target: development
-    restart: always
     ports:
       - 5173:5173
     networks:
@@ -16,12 +15,11 @@ services:
       - /app/node_modules
       - /app/apps/web/node_modules
   api:
-    container_name: api
+    container_name: api_dev
     build:
       context: .
       dockerfile: ./apps/api/Dockerfile
       target: development
-    restart: always
     ports:
       - 8000:8000
     networks:
@@ -31,5 +29,25 @@ services:
       - ./packages:/app/packages
       - /app/node_modules
       - /app/apps/api/node_modules
+  # ----------------------
+  #
+  # Uncomment and configure if your application requires a database during development
+  # We are using PostgreSQL as an example, but you can replace it with any other database service you need
+  #
+  # db:
+  #     image: postgres:18
+  #     container_name: postgres_dev
+  #     ports:
+  #       - 5432:5432
+  #     shm_size: 128mb
+  #     environment:
+  #       # POSTGRES_USER: postgres # Default user is 'postgres', you can change it if needed
+  #       # POSTGRES_DB: postgres # Default database is the same as POSTGRES_USER, you can change it if needed
+  #       POSTGRES_PASSWORD: devpassword
+  #     volumes:
+  #       - ./volumes/postgresql:/var/lib/postgresql
+  #     networks:
+  #       - ttt_network
+  # ----------------------
 networks:
   ttt_network:
