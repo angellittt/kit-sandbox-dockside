@@ -17,7 +17,6 @@ export interface UseDisclosureReturn {
  * @property {Function} onClose - Function to set the disclosure state to `false` (close).
  * @property {Function} onToggle - Function to toggle the disclosure state.
  * @property {Function} setIsOpen - Function to set the disclosure state directly.
- * @see [Documentation](https://chakra-ui.com/docs/hooks/use-disclosure)
  * @example
  * const { isOpen, onOpen, onClose, onToggle } = useDisclosure();
  *
