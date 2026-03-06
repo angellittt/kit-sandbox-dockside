@@ -46,7 +46,13 @@ async function collectCoverageFiles() {
 
             await fs.copyFile(coverageFilePath, destinationFile);
           } catch (err) {
-            // File doesn't exist in this directory, skip
+            if (
+              err instanceof Error &&
+              (err as NodeJS.ErrnoException).code !== "ENOENT"
+            ) {
+              console.error(`Error accessing coverage.json in ${match}:`, err);
+              process.exit(1);
+            }
           }
         }
       }
@@ -75,6 +81,7 @@ async function collectCoverageFiles() {
     console.log(`Coverage collected into: ${path.join(process.cwd())}`);
   } catch (error) {
     console.error("Error collecting coverage files:", error);
+    process.exit(1);
   }
 }
 

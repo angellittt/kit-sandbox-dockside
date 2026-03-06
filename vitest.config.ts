@@ -1,27 +1,27 @@
 import { defineConfig } from "vitest/config";
-import { sharedConfig } from "@repo/vitest-config";
+import { baseConfig } from "@repo/vitest-config";
 
 export default defineConfig({
-  ...sharedConfig,
+  ...baseConfig,
   test: {
     projects: [
       {
         root: "./packages",
         test: {
-          ...sharedConfig.test,
+          ...baseConfig.test,
         },
       },
       {
         root: "./apps/api",
         test: {
-          ...sharedConfig.test,
+          ...baseConfig.test,
           setupFiles: "./src/tests/setup.ts",
         },
       },
       {
         root: "./apps/web",
         test: {
-          ...sharedConfig.test,
+          ...baseConfig.test,
           setupFiles: "./src/tests/setup.ts",
           environment: "jsdom",
         },
