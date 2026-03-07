@@ -9,6 +9,7 @@ import { createTypeScriptImportResolver } from "eslint-import-resolver-typescrip
 import { importX } from "eslint-plugin-import-x";
 // @ts-ignore - No types available for eslint-plugin-promise
 import pluginPromise from "eslint-plugin-promise";
+import turboConfig from "eslint-config-turbo/flat";
 
 const tsconfigRootDir = dirname(fileURLToPath(import.meta.url));
 
@@ -16,6 +17,12 @@ export default defineConfig([
   js.configs.recommended,
   importX.flatConfigs.recommended as any, // type assertion to avoid type error due to missing types for eslint-plugin-import-x
   tseslint.configs.strict,
+  /** Include Turborepo's ESLint config to ensure consistency across the monorepo.
+   * This config includes rules and settings that are optimized for monorepos and
+   * work well with Turborepo's caching and build system.
+   * @see https://turborepo.dev/docs/crafting-your-repository/using-environment-variables
+   */
+  ...turboConfig,
   eslintConfigPrettier,
   {
     plugins: {

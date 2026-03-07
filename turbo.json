@@ -3,6 +3,7 @@
   "ui": "tui",
   "tasks": {
     "dev": {
+      "env": ["PORT", "HOST"],
       "cache": false,
       "persistent": true
     },
