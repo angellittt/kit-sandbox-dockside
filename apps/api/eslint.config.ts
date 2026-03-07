@@ -1,6 +1,6 @@
-import { backendEslintConfig } from "@repo/eslint-config/eslint.backend.config";
+import baseEslintConfig from "@repo/eslint-config/eslint.base.config";
 export default [
-  ...backendEslintConfig,
+  ...baseEslintConfig,
   {
     ignores: ["dist/**"],
   },

@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "exports": {
-    "./eslint.base.config": "./dist/eslint.base.config.js",
-    "./eslint.backend.config": "./dist/eslint.backend.config.js"
+    "./eslint.base.config": "./dist/eslint.base.config.js"
   },
   "scripts": {
     "build": "tsc"
@@ -25,6 +24,7 @@
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import-x": "^4.16.1",
     "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-promise": "^7.2.1",
     "eslint-plugin-turbo": "^2.8.14",
     "globals": "^16.5.0",
     "typescript-eslint": "^8.56.1"

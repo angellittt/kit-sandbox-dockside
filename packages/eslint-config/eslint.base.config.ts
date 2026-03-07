@@ -7,6 +7,8 @@ import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { createTypeScriptImportResolver } from "eslint-import-resolver-typescript";
 import { importX } from "eslint-plugin-import-x";
+// @ts-ignore - No types available for eslint-plugin-promise
+import pluginPromise from "eslint-plugin-promise";
 
 const tsconfigRootDir = dirname(fileURLToPath(import.meta.url));
 
@@ -16,6 +18,9 @@ export default defineConfig([
   tseslint.configs.strict,
   eslintConfigPrettier,
   {
+    plugins: {
+      promise: pluginPromise,
+    },
     files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
     languageOptions: {
       globals: globals.browser,
@@ -36,6 +41,22 @@ export default defineConfig([
       ],
     },
     rules: {
+      /* Manually adding promise rules because eslint-plugin-promise is not
+       * compatible with ESLint flat config, so the recommended preset cannot
+       * be used directly. Defining rules here ensures they are applied correctly.
+       */
+      "promise/always-return": "error",
+      "promise/no-return-wrap": "error",
+      "promise/param-names": "error",
+      "promise/catch-or-return": "error",
+      "promise/no-native": "off",
+      "promise/no-nesting": "warn",
+      "promise/no-promise-in-callback": "warn",
+      "promise/no-callback-in-promise": "warn",
+      "promise/avoid-new": "off",
+      "promise/no-new-statics": "error",
+      "promise/no-return-in-finally": "warn",
+      "promise/valid-params": "warn",
       /** Enforce a convention in module import order
        * @see https://github.com/un-ts/eslint-plugin-import-x/blob/master/docs/rules/order.md
        */
