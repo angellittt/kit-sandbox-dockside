@@ -26,7 +26,7 @@ export default defineConfig([
    * @see https://turborepo.dev/docs/crafting-your-repository/using-environment-variables
    */
   ...turboConfig,
-  eslintConfigPrettier,
+  eslintConfigPrettier, // This plugin must always be last so it gets the chance to override other configs.
   {
     plugins: {
       promise: pluginPromise,
