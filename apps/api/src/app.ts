@@ -1,5 +1,5 @@
-import express from "express";
 import { Server } from "http";
+import express from "express";
 import { ServerConfig } from "./types/index.js";
 import { checkPortAvailable, getAddress } from "./utils/index.js";
 import { apiRouter } from "./routes/index.js";

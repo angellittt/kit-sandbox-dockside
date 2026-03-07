@@ -35,5 +35,24 @@ export default defineConfig([
         }),
       ],
     },
+    rules: {
+      /** Enforce a convention in module import order
+       * @see https://github.com/un-ts/eslint-plugin-import-x/blob/master/docs/rules/order.md
+       */
+      "import-x/order": [
+        "warn",
+        {
+          groups: [
+            "builtin", // Node.js modules first
+            "external", // npm packages next
+            "internal", // internal monorepo or alias packages
+            "parent", // ../ imports
+            "sibling", // ./ imports
+            "index", // ./index files
+            "object", // type-only or special TS imports
+          ],
+        },
+      ],
+    },
   },
 ]);

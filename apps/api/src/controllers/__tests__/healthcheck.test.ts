@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { getTestAddress } from "../../tests/utils.js";
 import axios from "axios";
+import { getTestAddress } from "../../tests/utils.js";
 
 describe("API tests", () => {
   test("healthcheck works", async () => {
