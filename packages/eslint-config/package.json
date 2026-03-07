@@ -1,14 +1,33 @@
 {
-  "name": "eslint-config",
+  "name": "@repo/eslint-config",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "exports": {
+    "./eslint.base.config": "./dist/eslint.base.config.js",
+    "./eslint.backend.config": "./dist/eslint.backend.config.js"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.30.3",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@eslint/eslintrc": "^3.3.5",
+    "@eslint/js": "^9.39.3",
+    "@types/node": "^25.3.5",
+    "@typescript-eslint/eslint-plugin": "^8.56.1",
+    "@typescript-eslint/parser": "^8.56.1",
+    "eslint": "^9.39.3",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-turbo": "^2.8.14",
+    "globals": "^16.5.0",
+    "typescript-eslint": "^8.56.1"
+  },
+  "devDependencies": {
+    "jiti": "^2.6.1"
+  }
 }
