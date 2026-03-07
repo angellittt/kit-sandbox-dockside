@@ -119,6 +119,17 @@ $ pnpm test:report
 $ pnpm test:report:view
 ```
 
+### Creating a new package
+
+```sh
+# Create an empty dir
+$ mkdir -p packages/<your-package>
+# Cd into dir
+$ cd packages/<your-package>
+# Initialize package
+$ pnpm init --init-type module
+```
+
 ## Rationale
 
 We believe that it's important to document the reason behind some of the key decisions we made in this project.
