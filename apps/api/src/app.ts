@@ -11,30 +11,22 @@ export const createApp = () => {
 };
 
 export const startServer = async (config: ServerConfig) => {
-  try {
-    await checkPortAvailable(config.port, config.host);
+  await checkPortAvailable(config.port, config.host);
 
-    const app = createApp();
-    return new Promise<Server>((resolve, reject) => {
-      const server = app.listen(
-        config.port,
-        config.host,
-        async (error?: Error) => {
-          if (error) {
-            reject(error);
-          }
-          const address = getAddress(server);
-          // TODO: Install logger and replace console.log
-          console.log(`Ready at ${address}`);
-          resolve(server);
-        },
-      );
-    });
-  } catch (error) {
-    // TODO: Install logger and replace console.error
-    console.error(
-      `Error starting server: ${error instanceof Error ? error.message : error}`,
+  const app = createApp();
+  return new Promise<Server>((resolve, reject) => {
+    const server = app.listen(
+      config.port,
+      config.host,
+      async (error?: Error) => {
+        if (error) {
+          reject(error);
+        }
+        const address = getAddress(server);
+        // TODO: Install logger and replace console.log
+        console.log(`Ready at ${address}`);
+        resolve(server);
+      },
     );
-    process.exit(1);
-  }
+  });
 };
