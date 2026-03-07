@@ -10,12 +10,15 @@ import { importX } from "eslint-plugin-import-x";
 // @ts-ignore - No types available for eslint-plugin-promise
 import pluginPromise from "eslint-plugin-promise";
 import turboConfig from "eslint-config-turbo/flat";
+// @ts-ignore - No types available for eslint-plugin-security
+import pluginSecurity from "eslint-plugin-security";
 
 const tsconfigRootDir = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig([
   js.configs.recommended,
   importX.flatConfigs.recommended as any, // type assertion to avoid type error due to missing types for eslint-plugin-import-x
+  pluginSecurity.configs.recommended as any, // type assertion to avoid type error due to missing types for eslint-plugin-security
   tseslint.configs.strict,
   /** Include Turborepo's ESLint config to ensure consistency across the monorepo.
    * This config includes rules and settings that are optimized for monorepos and
@@ -30,7 +33,10 @@ export default defineConfig([
     },
     files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
     languageOptions: {
-      globals: globals.browser,
+      globals: {
+        ...globals.node,
+        ...globals.browser,
+      },
       ecmaVersion: "latest",
       sourceType: "module",
       parserOptions: {
