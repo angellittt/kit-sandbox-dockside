@@ -6,9 +6,9 @@ import { healthcheckRouter } from "./healthcheck.js";
 export const apiRouter: Router = Router();
 
 apiRouter.use(cors());
-apiRouter.use(express.json({ limit: "50mb" }));
+apiRouter.use(express.json({ limit: "10mb" }));
 apiRouter.use(
-  express.urlencoded({ limit: "50mb", extended: true, parameterLimit: 50000 }),
+  express.urlencoded({ limit: "10mb", extended: true, parameterLimit: 1000 }),
 );
 
 apiRouter.use("/healthcheck", healthcheckRouter);

@@ -1,7 +1,8 @@
 import { startServer } from "./app.js";
 import { ServerConfig } from "./types/index.js";
 
-const port = process.env.PORT ? Number(process.env.PORT) : 8000;
+const envPort = process.env.PORT !== undefined ? Number(process.env.PORT) : NaN;
+const port = Number.isFinite(envPort) ? envPort : 8000;
 const host = process.env.HOST ?? "0.0.0.0";
 
 const config: ServerConfig = {
