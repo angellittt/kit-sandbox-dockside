@@ -29,7 +29,7 @@ export interface UseBooleanOutput {
  * toggle();
  * console.log(value); // true
  */
-export function useBoolean(defaultValue?: boolean): UseBooleanOutput {
+export const useBoolean = (defaultValue?: boolean): UseBooleanOutput => {
   const [value, setValue] = useState(!!defaultValue);
 
   const setTrue = useCallback(() => {
@@ -45,4 +45,4 @@ export function useBoolean(defaultValue?: boolean): UseBooleanOutput {
   }, []);
 
   return { value, setValue, setTrue, setFalse, toggle };
-}
+};
