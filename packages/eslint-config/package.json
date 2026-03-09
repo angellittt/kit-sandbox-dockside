@@ -5,9 +5,6 @@
   "exports": {
     "./eslint.base.config": "./src/eslint.base.config.ts"
   },
-  "scripts": {
-    "build": "tsc"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",
