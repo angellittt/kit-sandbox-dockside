@@ -10,6 +10,7 @@ import pluginPromise from "eslint-plugin-promise";
 import turboConfig from "eslint-config-turbo/flat";
 // @ts-ignore - No types available for eslint-plugin-security
 import pluginSecurity from "eslint-plugin-security";
+import tsParser from "@typescript-eslint/parser";
 
 export default defineConfig([
   globalIgnores(["dist"]),
@@ -27,8 +28,9 @@ export default defineConfig([
     plugins: {
       promise: pluginPromise,
     },
-    files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
+    files: ["**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}"],
     languageOptions: {
+      parser: tsParser,
       globals: {
         ...globals.node,
         ...globals.browser,

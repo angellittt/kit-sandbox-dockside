@@ -1,6 +1,6 @@
+import { describe, expect, it } from "vitest";
 import { render, screen } from "../tests/utils";
 import App from "../App";
-import { describe, expect, it } from "vitest";
 
 describe("App", () => {
   it("should render a button", async () => {

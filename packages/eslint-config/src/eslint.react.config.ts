@@ -10,7 +10,7 @@ import reactRefresh from "eslint-plugin-react-refresh";
 
 export default defineConfig([
   ...baseConfig,
-  reactPlugin.configs.flat.recommended,
+  reactPlugin.configs.flat["jsx-runtime"],
   reactHooks.configs.flat.recommended,
   reactRefresh.configs.vite,
   jsxA11y.flatConfigs.recommended,
@@ -18,7 +18,6 @@ export default defineConfig([
     files: ["**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}"],
     languageOptions: {
       ecmaVersion: 2020,
-      ...jsxA11y.flatConfigs.recommended.languageOptions,
       globals: {
         ...globals.serviceworker,
         ...globals.browser,
