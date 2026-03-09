@@ -76,6 +76,8 @@ Both the `api` and `web` applications are dockerized. To start local development
 ```sh
 # Start API and Web containers in development mode
 $ pnpm compose:dev:up
+# Tears down all dev containers and their volumes
+$ pnpm compose:dev:down
 ```
 
 Access the web app at [http://localhost:5173](http://localhost:5173) and the API at [http://localhost:8000](http://localhost:8000).
@@ -87,6 +89,8 @@ To start the containers using a production-ready build, you can use:
 ```sh
 # Start API and Web containers
 $ pnpm compose:up
+# Tear down containers
+$ pnpm compose:down
 ```
 
 Access the web app at [http://localhost](http://localhost) or [https://localhost](https://localhost), and the API at [http://localhost:8080](http://localhost:8080).
