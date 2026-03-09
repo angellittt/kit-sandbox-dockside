@@ -4,7 +4,7 @@ import { ServerConfig } from "./types/index.js";
 import { checkPortAvailable, getAddress } from "./utils/index.js";
 import { apiRouter } from "./routes/index.js";
 
-export const createApp = () => {
+export const createApp = (): express.Express => {
   const app = express();
   app.use("/api/v1", apiRouter);
   return app;
