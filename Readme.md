@@ -121,7 +121,7 @@ $ pnpm test:report:view
 
 ### Linting
 
-We use eslint for linting the code. All rules are defined under the `eslint-config` package.
+We use eslint for linting the code. Please make sure you have the [eslint vscode extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) installed. All rules are defined under the `eslint-config` package.
 **Note**: If you want to add the linter rules under your app, you must install `jiti` as a dev dependency. See more info on [how to use typescript configuration files here](https://eslint.org/docs/latest/use/configure/configuration-files#typescript-configuration-files)
 
 ```sh
@@ -134,7 +134,7 @@ $ pnpm lint:fix
 
 ### Formatting
 
-We use prettier to format the code. Try the following commands:
+We use prettier to format the code. Make sure you have the [prettier vscode extension](https://github.com/prettier/prettier-vscode) installed. Try the following commands:
 
 ```sh
 # Runs formatter
