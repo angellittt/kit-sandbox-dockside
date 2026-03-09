@@ -25,7 +25,8 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "test": "vitest",
-    "lint": "eslint --fix ."
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "packageManager": "pnpm@10.30.3"
 }

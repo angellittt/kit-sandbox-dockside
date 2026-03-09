@@ -10,7 +10,9 @@
     "test:projects": "vitest run",
     "test:projects:watch": "vitest --watch",
     "test:report": "turbo run test-report",
-    "test:report:view": "pnpm test:report && open-cli packages/vitest-config/coverage/report/index.html"
+    "test:report:view": "pnpm test:report && open-cli packages/vitest-config/coverage/report/index.html",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix"
   },
   "devDependencies": {
     "@repo/vitest-config": "workspace:*",
