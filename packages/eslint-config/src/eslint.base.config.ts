@@ -11,10 +11,12 @@ import turboConfig from "eslint-config-turbo/flat";
 // @ts-ignore - No types available for eslint-plugin-security
 import pluginSecurity from "eslint-plugin-security";
 import tsParser from "@typescript-eslint/parser";
+import preferArrowFunctions from "eslint-plugin-prefer-arrow-functions";
 
 export default defineConfig([
   globalIgnores(["dist"]),
   js.configs.recommended,
+  preferArrowFunctions.configs.all,
   importX.flatConfigs.recommended as any, // type assertion to avoid type error due to missing types for eslint-plugin-import-x
   pluginSecurity.configs.recommended as any, // type assertion to avoid type error due to missing types for eslint-plugin-security
   tseslint.configs.strict,
