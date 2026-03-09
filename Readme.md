@@ -127,9 +127,20 @@ We use eslint for linting the code. All rules are defined under the `eslint-conf
 ```sh
 # Runs linter in all apps/packages
 $ pnpm lint
-# Runs linter in all apps/packages and fixes all automatically fixable issues
+# Runs linter in all apps/packages and fixes all automatically fixable issues (useful for CI)
 $ pnpm lint:fix
 
+```
+
+### Formatting
+
+We use prettier to format the code. Try the following commands:
+
+```sh
+# Runs formatter
+$ pnpm format
+# Runs formatter but does only checks that files are already formatted
+$ pnpm format:check
 ```
 
 ### Creating a new package

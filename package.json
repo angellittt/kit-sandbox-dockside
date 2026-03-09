@@ -12,11 +12,14 @@
     "test:report": "turbo run test-report",
     "test:report:view": "pnpm test:report && open-cli packages/vitest-config/coverage/report/index.html",
     "lint": "turbo run lint",
-    "lint:fix": "turbo run lint:fix"
+    "lint:fix": "turbo run lint:fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
   },
   "devDependencies": {
     "@repo/vitest-config": "workspace:*",
     "open-cli": "^8.0.0",
+    "prettier": "3.8.1",
     "turbo": "^2.8.12",
     "vitest": "^4.0.18"
   }
