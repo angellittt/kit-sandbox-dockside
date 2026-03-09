@@ -122,6 +122,7 @@ $ pnpm test:report:view
 ### Linting
 
 We use eslint for linting the code. All rules are defined under the `eslint-config` package.
+**Note**: If you want to add the linter rules under your app, you must install `jiti` as a dev dependency. See more info on [how to use typescript configuration files here](https://eslint.org/docs/latest/use/configure/configuration-files#typescript-configuration-files)
 
 ```sh
 # Runs linter in all apps/packages
