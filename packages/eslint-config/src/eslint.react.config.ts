@@ -15,9 +15,18 @@ export default defineConfig([
   reactRefresh.configs.vite,
   jsxA11y.flatConfigs.recommended,
   {
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
     files: ["**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}"],
     languageOptions: {
-      ecmaVersion: 2020,
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
       globals: {
         ...globals.serviceworker,
         ...globals.browser,
