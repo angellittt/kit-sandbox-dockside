@@ -119,6 +119,18 @@ $ pnpm test:report
 $ pnpm test:report:view
 ```
 
+### Linting
+
+We use eslint for linting the code. All rules are defined under the `eslint-config` package.
+
+```sh
+# Runs linter in all apps/packages
+$ pnpm lint
+# Runs linter in all apps/packages and fixes all automatically fixable issues
+$ pnpm lint:fix
+
+```
+
 ### Creating a new package
 
 ```sh
