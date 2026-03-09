@@ -131,7 +131,7 @@ We use eslint for linting the code. Please make sure you have the [eslint vscode
 ```sh
 # Runs linter in all apps/packages
 $ pnpm lint
-# Runs linter in all apps/packages and fixes all automatically fixable issues (useful for CI)
+# Runs linter in all apps/packages and fixes all automatically fixable issues
 $ pnpm lint:fix
 
 ```
@@ -143,7 +143,7 @@ We use prettier to format the code. Make sure you have the [prettier vscode exte
 ```sh
 # Runs formatter
 $ pnpm format
-# Runs formatter but does only checks that files are already formatted
+# Runs formatter but does only checks that files are already formatted (useful for CI)
 $ pnpm format:check
 ```
 
