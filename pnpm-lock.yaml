@@ -114,7 +114,7 @@ importers:
         version: 7.3.1(@types/node@24.10.15)(tsx@4.21.0)
     optionalDependencies:
       '@rollup/rollup-linux-x64-musl':
-        specifier: latest
+        specifier: 4.59.0
         version: 4.59.0
 
   packages/vitest-config:
