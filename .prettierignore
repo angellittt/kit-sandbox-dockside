@@ -1,5 +1,6 @@
-# Following .gitignore file
+pnpm-lock.yaml
 
+# Following .gitignore file
 # Dependencies
 node_modules
 .pnp

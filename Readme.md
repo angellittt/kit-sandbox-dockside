@@ -143,7 +143,7 @@ We use prettier to format the code. Make sure you have the [prettier vscode exte
 ```sh
 # Runs formatter
 $ pnpm format
-# Runs formatter but does only checks that files are already formatted (useful for CI)
+# Runs formatter but only checks that files are already formatted (useful for CI)
 $ pnpm format:check
 ```
 
