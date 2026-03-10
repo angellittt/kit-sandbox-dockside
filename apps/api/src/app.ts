@@ -30,6 +30,3 @@ export const startServer = async (config: ServerConfig) => {
     );
   });
 };
-const x = () => {};
-
-x();
