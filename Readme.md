@@ -33,6 +33,9 @@ $ pnpm add turbo --global
 # Install all dependencies
 $ pnpm i
 
+# Install git hooks
+$ pnpm prepare
+
 # Build shared packages
 $ pnpm build
 ```
@@ -60,6 +63,9 @@ $ pnpm add turbo --global
 
 # Install all dependencies
 $ pnpm i
+
+# Install git hooks
+$ pnpm prepare
 
 # Build shared packages
 $ pnpm build
@@ -146,6 +152,23 @@ $ pnpm format
 # Runs formatter but only checks that files are already formatted (useful for CI)
 $ pnpm format:check
 ```
+
+### Git hooks
+
+Before every commit, a pre-commit hook will run to ensure all files follow the linting and formatting rules.
+Similarly, before pushing to remote, a pre-push hook will run tests for all projects.
+
+On rare occasions, it may be necessary to bypass the git hooks. For example, if you are a backend developer and the frontend tests are broken and you don't know how to fix them, you may want to skip the hooks.
+If needed, you can bypass them:
+
+```sh
+# Bypass the pre-commit hook
+git commit --no-verify
+# Bypass the pre-push hook
+git push --no-verify
+```
+
+**Warning**: Only bypass the git hooks if you have a valid reason.
 
 ### Creating a new package
 
