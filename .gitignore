@@ -58,3 +58,6 @@ lerna-debug.log*
 
 # Docker volumes
 volumes/
+
+# TypeScript
+**/*.tsbuildinfo
