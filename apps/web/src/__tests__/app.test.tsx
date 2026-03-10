@@ -14,6 +14,6 @@ describe("App", () => {
     expect(count.textContent).toBe("0");
     await user.click(button);
     expect(count.textContent).toBe("1");
-    expect(button).not.toBeDisabled();
+    expect(button).toBeDisabled();
   });
 });
