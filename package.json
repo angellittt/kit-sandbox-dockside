@@ -21,14 +21,15 @@
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
-      "eslint --fix"
+      "eslint --fix --max-warnings=0"
     ],
     "*.{ts,tsx,js,jsx,json,css,md,yml,yaml}": [
-      "prettier --write"
+      "prettier --write --ignore-unknown"
     ]
   },
   "devDependencies": {
     "@repo/vitest-config": "workspace:*",
+    "eslint": "^10.0.3",
     "husky": "^9.1.7",
     "lint-staged": "^16.3.2",
     "open-cli": "^8.0.0",
