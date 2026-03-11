@@ -25,6 +25,10 @@
     ],
     "*.{ts,tsx,js,jsx,json,css,md,yml,yaml}": [
       "prettier --write --ignore-unknown"
+    ],
+    "infra/**/*.tf": [
+      "bash -c 'cd infra && terraform fmt -check'",
+      "bash -c 'cd infra && terraform validate'"
     ]
   },
   "devDependencies": {
