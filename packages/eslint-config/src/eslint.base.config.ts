@@ -2,9 +2,7 @@ import js from "@eslint/js";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 import eslintConfigPrettier from "eslint-config-prettier";
-import { defineConfig } from "eslint/config";
-import { dirname } from "path";
-import { fileURLToPath } from "url";
+import { defineConfig, globalIgnores } from "eslint/config";
 import { createTypeScriptImportResolver } from "eslint-import-resolver-typescript";
 import { importX } from "eslint-plugin-import-x";
 // @ts-ignore - No types available for eslint-plugin-promise
@@ -12,11 +10,13 @@ import pluginPromise from "eslint-plugin-promise";
 import turboConfig from "eslint-config-turbo/flat";
 // @ts-ignore - No types available for eslint-plugin-security
 import pluginSecurity from "eslint-plugin-security";
-
-const tsconfigRootDir = dirname(fileURLToPath(import.meta.url));
+import tsParser from "@typescript-eslint/parser";
+import preferArrowFunctions from "eslint-plugin-prefer-arrow-functions";
 
 export default defineConfig([
+  globalIgnores(["dist"]),
   js.configs.recommended,
+  preferArrowFunctions.configs.all,
   importX.flatConfigs.recommended as any, // type assertion to avoid type error due to missing types for eslint-plugin-import-x
   pluginSecurity.configs.recommended as any, // type assertion to avoid type error due to missing types for eslint-plugin-security
   tseslint.configs.strict,
@@ -30,18 +30,15 @@ export default defineConfig([
     plugins: {
       promise: pluginPromise,
     },
-    files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
+    files: ["**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}"],
     languageOptions: {
+      parser: tsParser,
       globals: {
         ...globals.node,
         ...globals.browser,
       },
       ecmaVersion: "latest",
       sourceType: "module",
-      parserOptions: {
-        projectService: true,
-        tsconfigRootDir,
-      },
     },
     settings: {
       "import-x/resolver-next": [

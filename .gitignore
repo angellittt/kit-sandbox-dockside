@@ -55,7 +55,6 @@ lerna-debug.log*
 .DS_Store
 *.pem
 
-
 # Docker volumes
 volumes/
 

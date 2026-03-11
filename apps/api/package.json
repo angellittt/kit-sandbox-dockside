@@ -23,7 +23,7 @@
   },
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
+    "build": "tsc --project tsconfig.app.json",
     "test": "vitest",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
