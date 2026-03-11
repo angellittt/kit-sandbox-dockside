@@ -76,6 +76,8 @@ Both the `api` and `web` applications are dockerized. To start local development
 ```sh
 # Start API and Web containers in development mode
 $ pnpm compose:dev:up
+# Tears down all dev containers and their volumes
+$ pnpm compose:dev:down
 ```
 
 Access the web app at [http://localhost:5173](http://localhost:5173) and the API at [http://localhost:8000](http://localhost:8000).
@@ -87,6 +89,8 @@ To start the containers using a production-ready build, you can use:
 ```sh
 # Start API and Web containers
 $ pnpm compose:up
+# Tear down containers
+$ pnpm compose:down
 ```
 
 Access the web app at [http://localhost](http://localhost) or [https://localhost](https://localhost), and the API at [http://localhost:8080](http://localhost:8080).
@@ -121,7 +125,7 @@ $ pnpm test:report:view
 
 ### Linting
 
-We use eslint for linting the code. All rules are defined under the `eslint-config` package.
+We use eslint for linting the code. Please make sure you have the [eslint vscode extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) installed. All rules are defined under the `eslint-config` package.
 **Note**: If you want to add the linter rules under your app, you must install `jiti` as a dev dependency. See more info on [how to use typescript configuration files here](https://eslint.org/docs/latest/use/configure/configuration-files#typescript-configuration-files)
 
 ```sh
@@ -130,6 +134,17 @@ $ pnpm lint
 # Runs linter in all apps/packages and fixes all automatically fixable issues
 $ pnpm lint:fix
 
+```
+
+### Formatting
+
+We use prettier to format the code. Make sure you have the [prettier vscode extension](https://github.com/prettier/prettier-vscode) installed. Try the following commands:
+
+```sh
+# Runs formatter
+$ pnpm format
+# Runs formatter but only checks that files are already formatted (useful for CI)
+$ pnpm format:check
 ```
 
 ### Creating a new package

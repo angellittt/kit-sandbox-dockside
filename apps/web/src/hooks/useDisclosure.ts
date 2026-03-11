@@ -42,7 +42,7 @@ const useDisclosure = (initialState: boolean = false): UseDisclosureReturn => {
 
   return useMemo(
     () => ({ isOpen, onClose, onOpen, onToggle, setIsOpen }),
-    [isOpen, onClose, onOpen, onToggle, setIsOpen]
+    [isOpen, onClose, onOpen, onToggle, setIsOpen],
   );
 };
 

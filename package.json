@@ -5,18 +5,23 @@
     "dev:no-docker": "turbo dev",
     "build": "turbo build",
     "compose:dev:up": "docker compose -f docker-compose-dev.yml up --build",
+    "compose:dev:down": "docker compose -f docker-compose-dev.yml down -v",
     "compose:up": "docker compose -f docker-compose.yml up --build",
+    "compose:down": "docker compose -f docker-compose.yml down",
     "test": "turbo run test",
     "test:projects": "vitest run",
     "test:projects:watch": "vitest --watch",
     "test:report": "turbo run test-report",
     "test:report:view": "pnpm test:report && open-cli packages/vitest-config/coverage/report/index.html",
     "lint": "turbo run lint",
-    "lint:fix": "turbo run lint:fix"
+    "lint:fix": "turbo run lint:fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
   },
   "devDependencies": {
     "@repo/vitest-config": "workspace:*",
     "open-cli": "^8.0.0",
+    "prettier": "3.8.1",
     "turbo": "^2.8.12",
     "vitest": "^4.0.18"
   }
