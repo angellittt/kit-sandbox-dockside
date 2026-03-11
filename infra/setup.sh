@@ -9,10 +9,10 @@ fi
 command -v terraform &>/dev/null || { echo "Error: terraform is not installed."; exit 1; }
 command -v az        &>/dev/null || { echo "Error: azure CLI is not installed."; exit 1; }
 
+# We use the project name for the storage account, so we keep it short to avoid hitting Azure's 24 character limit when combined with the suffix.
+read -rp "Project name (3-18 chars, lowercase letters and numbers only): " PROJECT_NAME
 
-read -rp "Project name (3-24 chars, lowercase letters and numbers only): " PROJECT_NAME
-
-if [[ ! "$PROJECT_NAME" =~ ^[a-z0-9]{3,24}$ ]]; then
+if [[ ! "$PROJECT_NAME" =~ ^[a-z0-9]{3,18}$ ]]; then
   echo "Error: invalid project name."; exit 1
 fi
 
