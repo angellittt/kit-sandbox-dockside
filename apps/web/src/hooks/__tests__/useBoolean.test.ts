@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import { useBoolean } from "../useBoolean";
+import { useBoolean } from "@/hooks/useBoolean";
 
 describe("useBoolean", () => {
   it("should initialize with default value (false)", () => {

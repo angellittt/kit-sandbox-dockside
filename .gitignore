@@ -58,5 +58,5 @@ lerna-debug.log*
 # Docker volumes
 volumes/
 
-# TypeScript incremental build info
-tsconfig*.tsbuildinfo
+# TypeScript
+**/*.tsbuildinfo

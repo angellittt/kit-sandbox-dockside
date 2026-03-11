@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import useDisclosure from "../useDisclosure";
+import useDisclosure from "@/hooks/useDisclosure";
 
 describe("useDisclosure", () => {
   it("should initialize with default value (false)", () => {
