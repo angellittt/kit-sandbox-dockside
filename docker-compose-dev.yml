@@ -29,6 +29,13 @@ services:
       - ./packages:/app/packages
       - /app/node_modules
       - /app/apps/api/node_modules
+    healthcheck:
+      test:
+        ["CMD", "wget", "--spider", "http://0.0.0.0:8000/api/v1/healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
   # ----------------------
   #
   # Uncomment and configure if your application requires a database during development

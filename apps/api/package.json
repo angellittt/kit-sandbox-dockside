@@ -4,13 +4,16 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
+    "cors": "^2.8.6",
     "express": "^5.2.1"
   },
   "devDependencies": {
     "@repo/vitest-config": "workspace:*",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^25.3.2",
     "@vitest/coverage-istanbul": "^4.0.18",
+    "axios": "^1.13.6",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
