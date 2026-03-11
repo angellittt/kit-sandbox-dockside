@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ -f "backend.tf" ]]; then
+if [[ -f "$(dirname "$0")/backend.tf" ]]; then
   read -rp "Setup already run. Re-run and overwrite? [y/N]: " CONFIRM
   [[ "$CONFIRM" =~ ^[Yy]$ ]] || exit 0
 fi
@@ -25,10 +25,10 @@ if [[ -z "$SUBSCRIPTION_ID" ]]; then
   echo "Error: subscription ID cannot be empty."; exit 1
 fi
 
-
+az config set core.login_experience_v2=off # Disables the subscription selector feature
 az login --only-show-errors
 az account set --subscription "$SUBSCRIPTION_ID"
-
+az config set core.login_experience_v2=on # Re-enable the subscription selector for other commands
 
 RG_NAME="${PROJECT_NAME}_tfstate_rg"
 STORAGE_NAME="${PROJECT_NAME}tfstate"
