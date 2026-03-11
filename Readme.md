@@ -119,6 +119,30 @@ $ pnpm test:report
 $ pnpm test:report:view
 ```
 
+### Linting
+
+We use eslint for linting the code. All rules are defined under the `eslint-config` package.
+**Note**: If you want to add the linter rules under your app, you must install `jiti` as a dev dependency. See more info on [how to use typescript configuration files here](https://eslint.org/docs/latest/use/configure/configuration-files#typescript-configuration-files)
+
+```sh
+# Runs linter in all apps/packages
+$ pnpm lint
+# Runs linter in all apps/packages and fixes all automatically fixable issues
+$ pnpm lint:fix
+
+```
+
+### Creating a new package
+
+```sh
+# Create an empty dir
+$ mkdir -p packages/<your-package>
+# Cd into dir
+$ cd packages/<your-package>
+# Initialize package
+$ pnpm init --init-type module
+```
+
 ## Rationale
 
 We believe that it's important to document the reason behind some of the key decisions we made in this project.

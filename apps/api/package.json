@@ -8,12 +8,15 @@
     "express": "^5.2.1"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^25.3.2",
     "@vitest/coverage-istanbul": "^4.0.18",
     "axios": "^1.13.6",
+    "eslint": "^10.0.3",
+    "jiti": "^2.6.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
@@ -21,7 +24,9 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "test": "vitest"
+    "test": "vitest",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "packageManager": "pnpm@10.30.3"
 }

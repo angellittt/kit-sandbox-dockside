@@ -3,8 +3,15 @@
   "ui": "tui",
   "tasks": {
     "dev": {
+      "env": ["PORT", "HOST"],
       "cache": false,
       "persistent": true
+    },
+    "lint": {
+      "dependsOn": ["^build"]
+    },
+    "lint:fix": {
+      "dependsOn": ["^build"]
     },
     "build": {
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
