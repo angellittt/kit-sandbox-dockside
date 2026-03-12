@@ -59,12 +59,11 @@ lerna-debug.log*
 volumes/
 
 # TypeScript incremental build info
-tsconfig*.tsbuildinfo
-
-
+**/*.tsbuildinfo
 
 # Terraform
 infra/.terraform/
 infra/*.tfstate
 infra/*.tfstate.backup
 infra/.terraform.lock.hcl
+
