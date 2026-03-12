@@ -1,5 +1,5 @@
 resource "azurerm_key_vault" "key_vault" {
-  name                        = "${var.project_name}-${var.environment_name}-${random_string.globally_unique_suffix.result}"
+  name                        = "${var.project_name}-${var.environment_name}-${var.globally_unique_suffix}"
   resource_group_name         = azurerm_resource_group.resource_group.name
   location                    = var.location
   tenant_id                   = data.azurerm_client_config.current.tenant_id

@@ -1,10 +1,3 @@
-# A 3 char random string that can be used in resources that need a property that must be globally unique 
-resource "random_string" "globally_unique_suffix" {
-  length  = 3
-  special = false
-  upper   = false
-  numeric = false
-}
 
 data "azurerm_client_config" "current" {}
 

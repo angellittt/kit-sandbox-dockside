@@ -74,3 +74,9 @@ variable "key_vault_developers" {
     error_message = "Each developer must be a valid email address."
   }
 }
+
+variable "globally_unique_suffix" {
+  description = "A short string that can be used in resources that need a property that must be globally unique"
+  type        = string
+  default     = "ttt"
+}
