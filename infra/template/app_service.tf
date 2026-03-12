@@ -17,6 +17,7 @@ resource "azurerm_linux_web_app" "app_service" {
   }
 
   site_config {
+    container_registry_use_managed_identity = true
     application_stack {
       docker_image_name   = "${var.project_name}:latest"
       docker_registry_url = "https://${azurerm_container_registry.container_registry.login_server}"

@@ -28,3 +28,7 @@ module "dev_environment" {
   key_vault_developers     = ["sunny.xue@ttt.studio"]
 }
 
+output "dev_env_outputs" {
+  value     = module.dev_environment
+  sensitive = true
+}

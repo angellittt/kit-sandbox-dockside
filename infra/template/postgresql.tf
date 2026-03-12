@@ -2,6 +2,10 @@ resource "random_password" "postgresql_administrator_password" {
   length           = 16
   special          = true
   override_special = "!@#%&*_-"
+  min_upper        = 1
+  min_lower        = 1
+  min_numeric      = 1
+  min_special      = 1
 }
 
 resource "azurerm_postgresql_flexible_server" "postgresql" {
