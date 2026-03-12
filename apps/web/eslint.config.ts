@@ -9,5 +9,16 @@ export default defineConfig([
         tsconfigRootDir: import.meta.dirname,
       },
     },
+    rules: {
+      "import-x/no-unresolved": [
+        "error",
+        {
+          /* Ignoring absolute import paths because we couldn't figure out how to make it work with eslint
+           * Created a ticket for this: https://app.clickup.com/t/8593845/HAND_INT-552
+           */
+          ignore: ["^@/"],
+        },
+      ],
+    },
   },
 ]);
