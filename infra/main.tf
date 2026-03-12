@@ -24,6 +24,5 @@ module "dev_environment" {
   # Replace with your own email addresses
   key_vault_administrators = ["juan.lopez@ttt.studio", "justin.kuan@ttt.studio"]
   key_vault_developers     = ["sunny.xue@ttt.studio"]
-
 }
 

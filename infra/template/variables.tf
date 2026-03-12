@@ -80,3 +80,33 @@ variable "globally_unique_suffix" {
   type        = string
   default     = "ttt"
 }
+
+variable "postgresql_admin_username" {
+  description = "Administrator username for the PostgreSQL Flexible Server"
+  type        = string
+  default     = "pgadmin"
+}
+
+variable "postgresql_sku_name" {
+  description = "SKU name for the PostgreSQL Flexible Server"
+  type        = string
+  default     = "B_Standard_B1ms"
+}
+
+variable "postgresql_version" {
+  description = "PostgreSQL version"
+  type        = string
+  default     = "16"
+}
+
+variable "postgresql_storage_mb" {
+  description = "Storage size in MB for the PostgreSQL Flexible Server"
+  type        = number
+  default     = 32768
+}
+
+variable "app_service_plan_sku" {
+  description = "SKU name for the App Service Plan (e.g. B1, B2, P1v2)"
+  type        = string
+  default     = "B1"
+}
