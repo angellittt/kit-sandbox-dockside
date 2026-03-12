@@ -3,7 +3,7 @@ resource "azurerm_container_registry" "container_registry" {
   resource_group_name = azurerm_resource_group.resource_group.name
   location            = var.location
   sku                 = var.container_registry_sku
-  admin_enabled       = true
+  admin_enabled       = false
 }
 
 output "container_registry_id" {

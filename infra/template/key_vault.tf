@@ -38,7 +38,7 @@ resource "azurerm_role_assignment" "admin_vault_secrets_role" {
 resource "azurerm_role_assignment" "developers_secrets_role" {
   for_each             = toset(data.azuread_users.developers.object_ids)
   scope                = azurerm_key_vault.key_vault.id
-  role_definition_name = "Key Vault Administrator"
+  role_definition_name = "Key Vault Secrets Officer"
   principal_id         = each.key
   depends_on           = [azurerm_role_assignment.admin_vault_role]
 }

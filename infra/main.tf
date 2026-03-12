@@ -23,7 +23,7 @@ module "dev_environment" {
   swa_location     = "westus2"
   # Replace with your own email addresses
   key_vault_administrators = ["juan.lopez@ttt.studio", "justin.kuan@ttt.studio"]
-  key_vault_developers     = []
+  key_vault_developers     = ["sunny.xue@ttt.studio"]
 
 }
 
