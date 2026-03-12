@@ -35,6 +35,17 @@ variable "swa_location" {
   }
 }
 
+variable "key_vault_sku_name" {
+  description = "SKU name for the Azure Key Vault (standard or premium)"
+  type        = string
+  default     = "standard"
+
+  validation {
+    condition     = contains(["standard", "premium"], var.key_vault_sku_name)
+    error_message = "key_vault_sku_name must be one of: standard, premium."
+  }
+}
+
 variable "container_registry_sku" {
   description = "SKU for the Azure Container Registry (Basic, Standard, Premium)"
   type        = string
@@ -43,5 +54,23 @@ variable "container_registry_sku" {
   validation {
     condition     = contains(["Basic", "Standard", "Premium"], var.container_registry_sku)
     error_message = "container_registry_sku must be one of: Basic, Standard, Premium."
+  }
+}
+
+variable "key_vault_administrators" {
+  description = "List of email addresses for Key Vault administrators"
+  type        = list(string)
+  validation {
+    condition     = alltrue([for email in var.key_vault_administrators : can(regex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$", email))])
+    error_message = "Each administrator must be a valid email address."
+  }
+}
+
+variable "key_vault_developers" {
+  description = "List of email addresses for Key Vault developers"
+  type        = list(string)
+  validation {
+    condition     = alltrue([for email in var.key_vault_developers : can(regex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$", email))])
+    error_message = "Each developer must be a valid email address."
   }
 }
