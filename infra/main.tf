@@ -1,4 +1,3 @@
-
 terraform {
   required_providers {
     azurerm = {
@@ -15,9 +14,16 @@ provider "azurerm" {
   resource_provider_registrations = "none"
 }
 
-# Sample resource. TODO: Replace with actual infrastructure
-resource "azurerm_resource_group" "example" {
-  name     = "${var.project_name}-resources"
-  location = var.location
+module "dev_environment" {
+  source           = "./template"
+  location         = var.location
+  project_name     = var.project_name
+  subscription_id  = var.subscription_id
+  environment_name = "dev"
+  swa_location     = "westus2"
+  # Replace with your own email addresses
+  key_vault_administrators = ["juan.lopez@ttt.studio", "justin.kuan@ttt.studio"]
+  key_vault_developers     = ["sunny.xue@ttt.studio"]
+
 }
 

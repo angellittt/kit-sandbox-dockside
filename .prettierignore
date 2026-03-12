@@ -61,3 +61,6 @@ volumes/
 
 # TypeScript incremental build info
 tsconfig*.tsbuildinfo
+
+# Terraform code
+*.tf
