@@ -110,3 +110,20 @@ variable "app_service_plan_sku" {
   type        = string
   default     = "B1"
 }
+
+variable "storage_account_replication_type" {
+  description = "Replication type for the Storage Account (LRS, GRS, RAGRS, ZRS)"
+  type        = string
+  default     = "LRS"
+
+  validation {
+    condition     = contains(["LRS", "GRS", "RAGRS", "ZRS"], var.storage_account_replication_type)
+    error_message = "storage_account_replication_type must be one of: LRS, GRS, RAGRS, ZRS."
+  }
+}
+
+variable "storage_container_name" {
+  description = "Name of the blob storage container"
+  type        = string
+  default     = "uploads"
+}

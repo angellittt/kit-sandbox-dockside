@@ -24,10 +24,13 @@ resource "azurerm_linux_web_app" "app_service" {
   }
 
   app_settings = {
-    "POSTGRESQL_HOST"     = azurerm_postgresql_flexible_server.postgresql.fqdn
-    "POSTGRESQL_USER"     = var.postgresql_admin_username
-    "POSTGRESQL_DB"       = var.project_name
-    "POSTGRESQL_PASSWORD" = azurerm_postgresql_flexible_server.postgresql.administrator_password
+    "POSTGRESQL_HOST"         = azurerm_postgresql_flexible_server.postgresql.fqdn
+    "POSTGRESQL_USER"         = var.postgresql_admin_username
+    "POSTGRESQL_DB"           = var.project_name
+    "POSTGRESQL_PASSWORD"     = azurerm_postgresql_flexible_server.postgresql.administrator_password
+    "STORAGE_ACCOUNT_NAME"    = azurerm_storage_account.storage_account.name
+    "STORAGE_CONTAINER_NAME"  = azurerm_storage_container.storage_container.name
+    "STORAGE_BLOB_ENDPOINT"   = azurerm_storage_account.storage_account.primary_blob_endpoint
   }
 
   lifecycle {
