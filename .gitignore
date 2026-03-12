@@ -58,5 +58,12 @@ lerna-debug.log*
 # Docker volumes
 volumes/
 
-# TypeScript
+# TypeScript incremental build info
 **/*.tsbuildinfo
+
+# Terraform
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.backup
+infra/.terraform.lock.hcl
+

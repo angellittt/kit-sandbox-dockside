@@ -181,6 +181,10 @@ $ cd packages/<your-package>
 $ pnpm init --init-type module
 ```
 
+### Managing infrastructure
+
+Please read infra/Readme.md
+
 ## Rationale
 
 We believe that it's important to document the reason behind some of the key decisions we made in this project.
