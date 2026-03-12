@@ -81,10 +81,16 @@ variable "globally_unique_suffix" {
   default     = "ttt"
 }
 
+variable "enable_postgresql" {
+  description = "Whether to provision the PostgreSQL Flexible Server and related configuration"
+  type        = bool
+  default     = true
+}
+
 variable "postgresql_admin_username" {
   description = "Administrator username for the PostgreSQL Flexible Server"
   type        = string
-  default     = "pgadmin"
+  default     = "psqladmin"
 }
 
 variable "postgresql_sku_name" {
@@ -96,7 +102,7 @@ variable "postgresql_sku_name" {
 variable "postgresql_version" {
   description = "PostgreSQL version"
   type        = string
-  default     = "16"
+  default     = "16" # Postgresql 17 and 18 are still not supported 
 }
 
 variable "postgresql_storage_mb" {
