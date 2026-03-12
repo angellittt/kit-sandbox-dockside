@@ -22,7 +22,7 @@ module "dev_environment" {
   environment_name = "dev"
   swa_location     = "westus2"
   # Set to true if your app needs a postgreSQL database
-  enable_postgresql = true
+  enable_postgresql = false
   # Replace with your own email addresses
   key_vault_administrators = ["juan.lopez@ttt.studio", "justin.kuan@ttt.studio"]
   key_vault_developers     = ["sunny.xue@ttt.studio"]
