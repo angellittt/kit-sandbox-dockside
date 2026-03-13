@@ -80,3 +80,56 @@ variable "globally_unique_suffix" {
   type        = string
   default     = "ttt"
 }
+
+variable "enable_postgresql" {
+  description = "Whether to provision the PostgreSQL Flexible Server and related configuration"
+  type        = bool
+  default     = true
+}
+
+variable "postgresql_admin_username" {
+  description = "Administrator username for the PostgreSQL Flexible Server"
+  type        = string
+  default     = "psqladmin"
+}
+
+variable "postgresql_sku_name" {
+  description = "SKU name for the PostgreSQL Flexible Server"
+  type        = string
+  default     = "B_Standard_B1ms"
+}
+
+variable "postgresql_version" {
+  description = "PostgreSQL version"
+  type        = string
+  default     = "16" # Postgresql 17 and 18 are still not supported 
+}
+
+variable "postgresql_storage_mb" {
+  description = "Storage size in MB for the PostgreSQL Flexible Server"
+  type        = number
+  default     = 32768
+}
+
+variable "app_service_plan_sku" {
+  description = "SKU name for the App Service Plan (e.g. B1, B2, P1v2)"
+  type        = string
+  default     = "B1"
+}
+
+variable "storage_account_replication_type" {
+  description = "Replication type for the Storage Account (LRS, GRS, RAGRS, ZRS)"
+  type        = string
+  default     = "LRS"
+
+  validation {
+    condition     = contains(["LRS", "GRS", "RAGRS", "ZRS"], var.storage_account_replication_type)
+    error_message = "storage_account_replication_type must be one of: LRS, GRS, RAGRS, ZRS."
+  }
+}
+
+variable "storage_container_name" {
+  description = "Name of the blob storage container"
+  type        = string
+  default     = "uploads"
+}

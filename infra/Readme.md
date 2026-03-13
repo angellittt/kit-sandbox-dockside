@@ -13,3 +13,67 @@ If this is the first time you will interact with the project, please run `./setu
 This script will automatically push the terraform state to Azure by creating a resource group, a storage account, a storage container for you.
 
 You only need to execute this script once. After doing so, you can execute `terraform plan`, `terraform apply`, or `terraform destroy` as you would normally do in any terraform project.
+
+## Resources
+
+The infrastructure is defined in `main.tf` using the `./template` module per environment. The template contains:
+
+| Resource                        | Purpose                                    | Connections                                                                                                                    |
+| ------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Resource Group**              | Container for all environment resources    | Parent of all resources                                                                                                        |
+| **Container Registry**          | Stores Docker images for the app           | App Service pulls images from it via managed identity (AcrPull role)                                                           |
+| **App Service Plan**            | Compute plan for the web app               | Hosts the App Service                                                                                                          |
+| **App Service**                 | Runs the application as a Docker container | Pulls images from Container Registry; reads secrets from Key Vault; writes files to Storage; optionally connects to PostgreSQL |
+| **Key Vault**                   | Stores secrets and credentials             | App Service has Key Vault Secrets User role; admins/developers assigned via RBAC                                               |
+| **Storage Account + Container** | Blob storage for file uploads              | App Service has Storage Blob Data Contributor role; connection info injected as app settings                                   |
+| **PostgreSQL Flexible Server**  | Managed PostgreSQL database (optional)     | Firewall rule allows Azure services; connection info injected as app settings on App Service                                   |
+
+PostgreSQL provisioning is controlled by the `enable_postgresql` variable (default: `false`).
+
+## Applying changes per environment
+
+Environments are defined as separate module calls in `main.tf`. To apply changes to a specific environment, use `-target`:
+
+```bash
+# Plan changes for a specific environment
+terraform plan -target=module.dev_environment
+
+# Apply changes to a specific environment
+terraform apply -target=module.dev_environment
+```
+
+To apply all environments at once:
+
+```bash
+terraform apply
+```
+
+## Destroying infrastructure per environment
+
+To destroy a specific environment's resources:
+
+```bash
+terraform destroy -target=module.dev_environment
+```
+
+To destroy all environments:
+
+```bash
+terraform destroy
+```
+
+> **Warning:** Destroying will permanently delete all resources including databases and storage. Make sure to back up any important data first.
+
+## Using terraform output
+
+Outputs are marked sensitive and must be accessed explicitly. To view all outputs for an environment:
+
+```bash
+terraform output -json dev_env_outputs
+```
+
+To access a specific nested value:
+
+```bash
+terraform output -json dev_env_outputs | jq '.app_service_default_hostname'
+```
