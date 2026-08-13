@@ -1,28 +1,37 @@
-# Description
+## Summary
 
-Please include a summary of the changes and the related issue. Please also include relevant motivation and context. List any dependencies that are required for this change.
+<!-- What changed and why. Link the ClickUp task — use `Closes <link>` to auto-close on merge. -->
 
-## Ship, Show, or Ask
+## Reasoning
 
-Please indicate the type of PR by checking one option:
+<!-- A small PR (one concern, one place) may need just a sentence. A large PR should go deeper.
+     - Why: What problem does this solve and what context led to it? Note alternatives rejected.
+     - What: What concrete changes were made? (e.g. new component, updated query, removed flag)
+     - How: What approach was taken and what tradeoffs were considered?
+-->
 
-- [ ] Ship — Merge confidently. The change is minor/self-contained (e.g. hotfixes, one-line changes, etc.).
-- [ ] Show — Share work for visibility or feedback.
-- [ ] Ask — Request explicit approval, clarification, or help before moving forward.
+## How to Test
 
-Please make sure your PR title includes one of the types above, and specify it when sending a message to your teammates.
+<!-- Steps to verify locally. Include test data, env setup, or feature-flag toggles if relevant. -->
 
-## Task Link
+## Risk/Rollback
 
-Please include a link to the task in Clickup.
+<!-- Migrations, feature flags, config changes, revert plan. Omit if low-risk. -->
 
-## Checklist
+## Screenshots/Recordings
 
-- [ ] My code follows the style guidelines
-- [ ] I have performed a self-review of my code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
+<!-- UI changes only. Omit if covered in the task. -->
 
-## Screen Shots or Recordings
+| Before | After |
+| ------ | ----- |
+|        |       |
 
-Please include any screen shots or recordings of the changes if they are not already posted in the task.
+## Self-review Checklist
+
+- [ ] Rebased on target branch, conflicts resolved
+- [ ] Tests pass locally
+- [ ] Lint / format pass
+- [ ] Read the full diff in the GitHub UI
+- [ ] Docs updated (including `.env.example` if new environment variables were added)
+- [ ] PR title uses imperative tense (e.g. "Add feature" not "Added feature")
+- [ ] Code follows the project style guidelines

@@ -13,7 +13,7 @@
     "dev": "tsc --watch",
     "collect-json-reports": "node dist/scripts/collect-json-outputs.js",
     "merge-json-reports": "nyc merge coverage/raw coverage/merged/merged-coverage.json",
-    "test-report": "nyc report -t coverage/merged --report-dir coverage/report --reporter=html --exclude-after-remap false"
+    "test-report": "nyc report -t coverage/merged --report-dir coverage/report --reporter=html --reporter=json-summary --exclude-after-remap false"
   },
   "dependencies": {
     "vitest": "^4.0.18"
