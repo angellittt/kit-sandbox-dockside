@@ -11,11 +11,14 @@ resource "azurerm_key_vault" "key_vault" {
 
 }
 
+# Each email must match the user's Azure AD `mail` attribute exactly, and every
+# listed user must exist in the tenant, otherwise this data source errors and
+# fails the apply.
 data "azuread_users" "developers" {
-  user_principal_names = var.key_vault_developers
+  mails = var.key_vault_developers
 }
 data "azuread_users" "admins" {
-  user_principal_names = var.key_vault_administrators
+  mails = var.key_vault_administrators
 }
 
 

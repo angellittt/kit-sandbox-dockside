@@ -1,11 +1,11 @@
 # Keeping env names short to avoid hitting resource name length limits when combined with project_name and random suffix
 variable "environment_name" {
-  description = "The environment to deploy to (prod, dev, QA, stg)"
+  description = "The environment to deploy to (prod, dev, qa, stg)"
   type        = string
 
   validation {
-    condition     = contains(["prod", "dev", "QA", "stg"], var.environment_name)
-    error_message = "environment_name must be one of: prod, dev, QA, stg."
+    condition     = contains(["prod", "dev", "qa", "stg"], var.environment_name)
+    error_message = "environment_name must be one of: prod, dev, qa, stg."
   }
 }
 
