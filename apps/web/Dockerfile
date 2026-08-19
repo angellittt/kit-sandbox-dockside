@@ -1,8 +1,11 @@
 ARG NODE_VERSION=24.14.0
 FROM node:${NODE_VERSION}-alpine AS base
 ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
+ENV PATH="$PNPM_HOME/bin:$PNPM_HOME:$PATH"
+RUN apk add --no-cache ca-certificates openssl
 RUN corepack enable
+ARG PNPM_VERSION=10.30.3
+RUN corepack prepare pnpm@${PNPM_VERSION} --activate
 WORKDIR /app
 
 FROM base AS prepare
