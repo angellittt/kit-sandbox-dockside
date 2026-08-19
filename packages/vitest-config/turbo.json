@@ -5,11 +5,13 @@
       "cache": false
     },
     "merge-json-reports": {
+      "cache": false,
       "dependsOn": ["collect-json-reports"],
       "inputs": ["coverage/raw/**"],
       "outputs": ["coverage/merged/**"]
     },
     "test-report": {
+      "cache": false,
       "dependsOn": ["merge-json-reports"],
       "inputs": ["coverage/merged"],
       "outputs": ["coverage/report/**"]

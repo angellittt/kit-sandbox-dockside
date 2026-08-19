@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:packages/eslint-config
       '@repo/vitest-config':
         specifier: workspace:*
         version: link:packages/vitest-config
