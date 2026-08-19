@@ -3,8 +3,12 @@ import { defineConfig, mergeConfig } from "vitest/config";
 
 const config = defineConfig({
   test: {
-    setupFiles: "./src/tests/setup.ts",
+    globalSetup: "./src/tests/globalSetup.ts",
+    setupFiles: "./src/tests/setupFiles.ts",
     exclude: ["dist", "node_modules"],
+    coverage: {
+      clean: false,
+    },
   },
 });
 

@@ -3,7 +3,7 @@
   "ui": "tui",
   "tasks": {
     "dev": {
-      "env": ["PORT", "HOST"],
+      "env": ["PORT", "HOST", "NODE_ENV"],
       "cache": false,
       "persistent": true
     },
@@ -19,6 +19,7 @@
       "outputs": ["dist/**", ".next/**", "!.next/cache/**", "public/dist/**"]
     },
     "test": {
+      "env": ["NODE_ENV"],
       "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/vitest.config.ts"],
       "dependsOn": ["transit", "@repo/vitest-config#build"],
       "outputs": ["coverage.json"]

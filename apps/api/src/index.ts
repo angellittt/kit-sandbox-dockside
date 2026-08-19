@@ -1,20 +1,13 @@
 import { startServer } from "./app.js";
-import { ServerConfig } from "./types/index.js";
-
-const envPort = process.env.PORT !== undefined ? Number(process.env.PORT) : NaN;
-const port = Number.isFinite(envPort) ? envPort : 8000;
-const host = process.env.HOST ?? "0.0.0.0";
-
-const config: ServerConfig = {
-  port,
-  host,
-};
+import { getServerConfigFromEnvVars } from "./config/index.js";
+import { logger } from "./lib/logger.js";
 
 const main = async () => {
   try {
+    const config = getServerConfigFromEnvVars();
     await startServer(config);
   } catch (error) {
-    console.error("Error starting server:", error);
+    logger.error(error, "Error starting server");
     process.exit(1);
   }
 };
