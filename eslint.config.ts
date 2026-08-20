@@ -7,4 +7,14 @@ export default defineConfig([
   // breaking pre-commit lint on a root-level config file.
   globalIgnores(["vitest.config.ts"]),
   ...baseEslintConfig,
+  {
+    languageOptions: {
+      parserOptions: {
+        // Disambiguates root-level files (like this one) from workspace
+        // tsconfigs (e.g. apps/api), which typescript-eslint otherwise
+        // reports as competing candidate roots.
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
 ]);
