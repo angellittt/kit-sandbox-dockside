@@ -88,6 +88,12 @@ $ pnpm compose:dev:down
 
 Access the web app at [http://localhost:5173](http://localhost:5173) and the API at [http://localhost:8000](http://localhost:8000).
 
+To have containers auto-rebuild when `pnpm-lock.yaml` or a service's `package.json` changes, run Compose watch mode alongside `compose:dev:up` (in a separate terminal):
+
+```sh
+$ pnpm compose:dev:watch
+```
+
 #### Running with Docker
 
 To start the containers using a production-ready build, you can use:

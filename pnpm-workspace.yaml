@@ -1,3 +1,4 @@
 packages:
   - "apps/*"
   - "packages/*"
+minimumReleaseAge: 10080 # 7 days - guards against supply-chain attacks by waiting before picking up brand-new npm releases

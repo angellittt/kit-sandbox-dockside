@@ -14,6 +14,12 @@ services:
       - ./packages:/app/packages
       - /app/node_modules
       - /app/apps/web/node_modules
+    develop:
+      watch:
+        - action: rebuild
+          path: ./pnpm-lock.yaml
+        - action: rebuild
+          path: ./apps/web/package.json
   api:
     container_name: api_dev
     build:
@@ -36,6 +42,12 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
+    develop:
+      watch:
+        - action: rebuild
+          path: ./pnpm-lock.yaml
+        - action: rebuild
+          path: ./apps/api/package.json
   # ----------------------
   #
   # Uncomment and configure if your application requires a database during development

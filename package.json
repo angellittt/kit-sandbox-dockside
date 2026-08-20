@@ -6,6 +6,7 @@
     "dev:no-docker": "turbo dev",
     "build": "turbo build",
     "compose:dev:up": "docker compose -f docker-compose-dev.yml up --build",
+    "compose:dev:watch": "docker compose -f docker-compose-dev.yml watch",
     "compose:dev:down": "docker compose -f docker-compose-dev.yml down -v",
     "compose:up": "docker compose -f docker-compose.yml up --build",
     "compose:down": "docker compose -f docker-compose.yml down",
