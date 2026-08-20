@@ -1,4 +1,3 @@
-import type { FullConfig } from "@playwright/test";
 import { seedTestData } from "./utils.js";
 
 /**
@@ -6,6 +5,6 @@ import { seedTestData } from "./utils.js";
  * (see utils.ts) instead of assuming a specific db/ORM/auth setup - wire
  * seedTestData() up once a project has a seed endpoint to call.
  */
-export default async function globalSetup(_config: FullConfig) {
+export default async function globalSetup() {
   await seedTestData();
 }

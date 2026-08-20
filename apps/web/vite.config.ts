@@ -1,10 +1,14 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
+import svgr from "vite-plugin-svgr";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tsconfigPaths()],
+  // svgr() lets `import Icon from "./icon.svg?react"` yield a React
+  // component instead of a URL string - see
+  // src/assets/icons/__tests__/example.test.tsx for a working example.
+  plugins: [react(), tsconfigPaths(), svgr()],
   server: {
     watch: {
       usePolling: true,

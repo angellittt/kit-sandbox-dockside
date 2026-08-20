@@ -1,4 +1,3 @@
-import type { FullConfig } from "@playwright/test";
 import { clearTestData } from "./utils.js";
 
 /**
@@ -6,6 +5,6 @@ import { clearTestData } from "./utils.js";
  * Clears whatever globalSetup.ts seeded, so re-runs start from a clean
  * slate.
  */
-export default async function globalTeardown(_config: FullConfig) {
+export default async function globalTeardown() {
   await clearTestData();
 }
