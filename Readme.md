@@ -2,6 +2,20 @@
 
 This repository is a monorepo that contains both backend and frontend applications for the Handled / TTT Studios projects. It is structured to facilitate development, testing, and deployment of web apps using a single codebase.
 
+### Directory structure
+
+```
+Fullstack-starter-template/
+├── apps/
+│   ├── api/            # Express backend (Node.js, TypeScript)
+│   └── web/            # React frontend (Vite, TypeScript)
+├── packages/
+│   ├── eslint-config/  # Shared ESLint configuration
+│   └── vitest-config/  # Shared Vitest configuration and coverage setup
+├── infra/              # Terraform infrastructure as code (Azure)
+└── .github/            # GitHub Actions workflows, templates, and CODEOWNERS
+```
+
 ## Getting Started
 
 ### Prerequisites
@@ -70,6 +84,12 @@ $ pnpm prepare
 # Build shared packages
 $ pnpm build
 ```
+
+### Environment variables
+
+Neither app requires an environment variable to run the default stack locally — `docker-compose-dev.yml` and `docker-compose.yml` work out of the box.
+
+As an app needs configuration (an API base URL, a feature flag, a service credential), document it in a single root-level `.env.example` (with a `.env.test` counterpart for CI, using safe fixture values) rather than one file per app. `docker-compose-dev.yml` mounts that one shared `.env` into every service that needs it — keep it that way even as more variables get added, so there's one place to look instead of hunting through each app's folder.
 
 ### Docker & Containerization
 
@@ -164,8 +184,7 @@ $ pnpm format:check
 Before every commit, a pre-commit hook will run to ensure all files follow the linting and formatting rules.
 Similarly, before pushing to remote, a pre-push hook will run tests for all projects.
 
-On rare occasions, it may be necessary to bypass the git hooks. For example, if you are a backend developer and the frontend tests are broken and you don't know how to fix them, you may want to skip the hooks.
-If needed, you can bypass them:
+On rare occasions, it may be necessary to bypass the git hooks:
 
 ```sh
 # Bypass the pre-commit hook
@@ -174,7 +193,7 @@ git commit --no-verify
 git push --no-verify
 ```
 
-**Warning**: Only bypass the git hooks if you have a valid reason.
+**Warning**: Only bypass the hooks for tests you don't own — e.g. an unrelated app's suite is already broken on `main` and you don't know how to fix it. Never use `--no-verify` to skip a test that's failing because of your own change; fix it or ask for help instead.
 
 ### Creating a new package
 
@@ -190,6 +209,32 @@ $ pnpm init --init-type module
 ### Managing infrastructure
 
 Please read infra/Readme.md
+
+## CI/CD
+
+Two GitHub Actions workflows run on this repository today:
+
+| Workflow             | File                                                                               | Triggers                                   |
+| -------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------ |
+| Code Coverage Report | [`.github/workflows/code-coverage.yml`](.github/workflows/code-coverage.yml)       | PR opened, synchronised, or reopened       |
+| React Doctor (web)   | [`.github/workflows/react-doctor-web.yml`](.github/workflows/react-doctor-web.yml) | PR touching `apps/web/**` or `packages/**` |
+
+**Code Coverage Report** runs the test suite, reads the coverage summary, and posts/updates a sticky PR comment with the line/statement/function/branch percentages. It warns below 70% but never fails the check — informational only, until the team is comfortable enough writing tests to enforce a floor.
+
+**React Doctor (web)** runs [react-doctor](https://github.com/millionco/react-doctor) React performance/correctness linting on changed files. Non-blocking (`blocking: none`); it's a heads-up, not a gate. It's scoped to PRs touching `apps/web/**` or `packages/**` even though its actual scan target is fixed to `apps/web` — a `packages/**`-only PR triggers a deliberate no-op run rather than being silently skipped, since a shared package change can still affect `apps/web`'s render behavior.
+
+As this template grows a deploy pipeline (build/push a Docker image, run migrations, deploy to an environment), add it here as another row rather than a separate doc — this table should stay the one place that lists every workflow and what fires it.
+
+### Branch protection rules
+
+No branch is protected on this repository yet — the rules below are the convention to apply to `main` (and to `qa`/`staging` once those environments and their deploy workflows exist):
+
+- At least 1 approving review required before merging
+- Approvals are dismissed when new commits are pushed to the PR
+- Required status checks must pass before merging: Code Coverage Report; lint and format checks (once those workflows are added)
+- Force pushes are blocked
+- Branch deletion is blocked
+- Administrators are not exempt from any of the above rules
 
 ## Rationale
 
