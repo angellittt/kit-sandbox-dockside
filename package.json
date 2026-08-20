@@ -9,7 +9,11 @@
     "compose:dev:down": "docker compose -f docker-compose-dev.yml down -v",
     "compose:up": "docker compose -f docker-compose.yml up --build",
     "compose:down": "docker compose -f docker-compose.yml down",
+    "compose:test:up": "docker compose -f docker-compose-test.yml up --build",
+    "compose:test:down": "docker compose -f docker-compose-test.yml down -v",
     "test": "turbo run test",
+    "test:e2e": "./scripts/e2e-ci.sh",
+    "test:e2e:ui": "./scripts/e2e-ui.sh",
     "test:projects": "vitest run",
     "test:projects:watch": "vitest --watch",
     "test:report": "turbo run test-report",
@@ -32,8 +36,10 @@
     ]
   },
   "devDependencies": {
+    "@playwright/test": "1.62.1",
     "@repo/eslint-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
+    "@types/node": "^25.3.5",
     "eslint": "^10.0.3",
     "husky": "^9.1.7",
     "lint-staged": "^16.3.2",

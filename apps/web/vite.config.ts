@@ -11,5 +11,9 @@ export default defineConfig({
     },
     host: true,
     strictPort: true,
+    // Playwright (in the docker-compose-e2e.yml "playwright" container)
+    // hits this server over the docker network as "http://web:5173", so
+    // Vite's Host-header check needs to allow that hostname explicitly.
+    allowedHosts: ["web"],
   },
 });

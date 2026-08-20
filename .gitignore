@@ -19,6 +19,11 @@ node_modules
 coverage
 coverage.json
 
+# Playwright
+/playwright-report/
+/test-results/
+/e2e/.auth/
+
 
 # Turborepo cache
 .turbo
