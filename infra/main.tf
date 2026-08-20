@@ -4,6 +4,13 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "=4.1.0"
     }
+    # Only used by the optional transactional-email module (see
+    # infra/template/dns.tf) to poll domain verification via a local-exec
+    # provisioner.
+    null = {
+      source  = "hashicorp/null"
+      version = "~> 3.0"
+    }
     azuread = {
       source  = "hashicorp/azuread"
       version = "~> 3.0"
@@ -30,6 +37,10 @@ module "dev_environment" {
   # Replace with your own email addresses
   key_vault_administrators = ["juan.lopez@ttt.studio", "justin.kuan@ttt.studio"]
   key_vault_developers     = ["sunny.xue@ttt.studio"]
+  # Optional modules, both opt-in and off by default — see infra/Readme.md.
+  # Set to true (plus their required variables) if your project needs them.
+  enable_monitoring          = false
+  enable_transactional_email = false
 }
 
 output "dev_env_outputs" {

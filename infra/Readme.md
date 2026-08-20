@@ -30,6 +30,17 @@ The infrastructure is defined in `main.tf` using the `./template` module per env
 
 PostgreSQL provisioning is controlled by the `enable_postgresql` variable (default: `false`).
 
+## Optional modules
+
+These modules are opt-in and off by default, so they don't block a minimum-viable deployment of the template. Enable them per-environment in `main.tf` once a project actually needs them.
+
+| Module                  | Resources                                                                                                                                                             | Enabled by                                                                                                                                                                                               |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Monitoring/alerting** | Log Analytics workspace, 2x Application Insights (api/web), diagnostic settings, exception-spike alerts, health-check alert, 3-location synthetic availability checks | `enable_monitoring = true` + `alert_notification_emails` (see [`template/monitoring.tf`](template/monitoring.tf) and [`../MONITORING.md`](../MONITORING.md))                                             |
+| **Transactional email** | Azure Communication Services + custom email domain, with SPF/DKIM verification DNS records and a poll-and-wait verification script                                    | `enable_transactional_email = true` + `email_domain`, `dns_zone_name`, `dns_resource_group_name` (see [`template/communication.tf`](template/communication.tf) and [`template/dns.tf`](template/dns.tf)) |
+
+The transactional email module assumes the project's domain already has an Azure DNS zone — it doesn't provision one.
+
 ## Applying changes per environment
 
 Environments are defined as separate module calls in `main.tf`. To apply changes to a specific environment, use `-target`:

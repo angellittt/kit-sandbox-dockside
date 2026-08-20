@@ -18,9 +18,26 @@ resource "azurerm_linux_web_app" "app_service" {
 
   site_config {
     container_registry_use_managed_identity = true
+    health_check_path                       = "/api/v1/healthcheck"
     application_stack {
       docker_image_name   = "${var.project_name}:latest"
       docker_registry_url = "https://${azurerm_container_registry.container_registry.login_server}"
+    }
+  }
+
+  # Always-on filesystem logging so `az webapp log tail`/Kudu have something to show
+  # for debugging, independent of the optional enable_monitoring module (which streams
+  # to Log Analytics instead and is off by default). Azure rotates these once the size
+  # cap is hit, so this is short-lived, in-place debugging, not a durable log store.
+  logs {
+    application_logs {
+      file_system_level = "Information"
+    }
+    http_logs {
+      file_system {
+        retention_in_days = 7
+        retention_in_mb   = 35
+      }
     }
   }
 

@@ -5,20 +5,22 @@ import eslintConfigPrettier from "eslint-config-prettier";
 import { defineConfig, globalIgnores } from "eslint/config";
 import { createTypeScriptImportResolver } from "eslint-import-resolver-typescript";
 import { importX } from "eslint-plugin-import-x";
-// @ts-ignore - No types available for eslint-plugin-promise
+// @ts-expect-error - No types available for eslint-plugin-promise
 import pluginPromise from "eslint-plugin-promise";
 import turboConfig from "eslint-config-turbo/flat";
-// @ts-ignore - No types available for eslint-plugin-security
+// @ts-expect-error - No types available for eslint-plugin-security
 import pluginSecurity from "eslint-plugin-security";
 import tsParser from "@typescript-eslint/parser";
-import preferArrowFunctions from "eslint-plugin-prefer-arrow-functions";
+import { configs as preferArrowFunctionsConfigs } from "eslint-plugin-prefer-arrow-functions";
 
 export default defineConfig([
   globalIgnores(["dist"]),
   js.configs.recommended,
-  preferArrowFunctions.configs.all,
-  importX.flatConfigs.recommended as any, // type assertion to avoid type error due to missing types for eslint-plugin-import-x
-  pluginSecurity.configs.recommended as any, // type assertion to avoid type error due to missing types for eslint-plugin-security
+  preferArrowFunctionsConfigs.all,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- flatConfigs.recommended's languageOptions type conflicts with defineConfig's expected ConfigWithExtends across the @typescript-eslint/utils and @eslint/config-helpers versions in this repo
+  importX.flatConfigs.recommended as any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- eslint-plugin-security ships no type declarations
+  pluginSecurity.configs.recommended as any,
   tseslint.configs.strict,
   /** Include Turborepo's ESLint config to ensure consistency across the monorepo.
    * This config includes rules and settings that are optimized for monorepos and

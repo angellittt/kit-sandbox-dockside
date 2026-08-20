@@ -133,3 +133,65 @@ variable "storage_container_name" {
   type        = string
   default     = "uploads"
 }
+
+# --- Optional monitoring/alerting module (see monitoring.tf) ---
+
+variable "enable_monitoring" {
+  description = "Whether to provision the Log Analytics/Application Insights monitoring module (diagnostic settings, exception-spike alerts, synthetic availability checks). Opt-in: does not block the minimum-viable template."
+  type        = bool
+  default     = false
+}
+
+variable "alert_notification_emails" {
+  description = "Email addresses that receive unhandled-exception and availability alert notifications (kept independent of key_vault_administrators/key_vault_developers). Required when enable_monitoring is true."
+  type        = list(string)
+  default     = []
+  validation {
+    condition     = alltrue([for email in var.alert_notification_emails : can(regex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$", email))])
+    error_message = "Each notification address must be a valid email address."
+  }
+}
+
+variable "exception_alert_threshold" {
+  description = "Number of unhandled exceptions in the 5-minute window that triggers the exception-spike alert"
+  type        = number
+  default     = 5
+}
+
+variable "log_analytics_daily_quota_gb" {
+  description = "Daily ingestion cap for the Log Analytics workspace in GB. Bounds cost if an app sprays exceptions in a loop. Set to -1 for unlimited (prod)."
+  type        = number
+  default     = 1
+}
+
+# --- Optional transactional email module (see communication.tf, dns.tf) ---
+
+variable "enable_transactional_email" {
+  description = "Whether to provision Azure Communication Services for sending transactional email, with domain verification (SPF/DKIM). Opt-in: does not block the minimum-viable template."
+  type        = bool
+  default     = false
+}
+
+variable "email_domain" {
+  description = "Custom email domain for Azure Communication Services (e.g. mail.dev.example.com). Must be a subdomain of dns_zone_name, not the zone apex (e.g. not example.com itself); the DNS record name derivation in dns.tf doesn't support apex domains. Required when enable_transactional_email is true."
+  type        = string
+  default     = ""
+}
+
+variable "dns_zone_name" {
+  description = "Azure DNS zone name for the domain, used to create email verification DNS records. Required when enable_transactional_email is true; the zone must already exist."
+  type        = string
+  default     = ""
+}
+
+variable "dns_resource_group_name" {
+  description = "Resource group holding the Azure DNS zone. Required when enable_transactional_email is true."
+  type        = string
+  default     = ""
+}
+
+variable "communication_service_data_location" {
+  description = "Data residency region for Azure Communication Services (e.g. \"United States\", \"Europe\", \"Canada\") — see azurerm_communication_service docs for the full list of valid values."
+  type        = string
+  default     = "United States"
+}
