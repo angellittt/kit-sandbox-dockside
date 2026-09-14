@@ -30,6 +30,7 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc --project tsconfig.app.json",
+    "typecheck": "tsc -b --noEmit",
     "test": "vitest run",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"

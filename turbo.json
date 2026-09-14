@@ -25,6 +25,10 @@
       "dependsOn": ["transit", "@repo/vitest-config#build"],
       "outputs": ["coverage.json"]
     },
+    "typecheck": {
+      "dependsOn": ["transit", "@repo/vitest-config#build"],
+      "outputs": []
+    },
     "transit": {
       "dependsOn": ["^transit"]
     }

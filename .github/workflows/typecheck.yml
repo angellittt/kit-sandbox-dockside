@@ -1,0 +1,36 @@
+name: Typecheck
+
+# Runs `tsc` across every app/package (plus the two root-level config files
+# that aren't part of any workspace project). Unlike code-coverage.yml, this
+# check is blocking by design: the whole point is that a broken type can no
+# longer merge unnoticed. Mark this job as a required status check in branch
+# protection settings once it's run at least once on this branch.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: typecheck-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          # Keep in sync with ARG NODE_VERSION in apps/*/Dockerfile.
+          node-version: "24.14.0"
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck

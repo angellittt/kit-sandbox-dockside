@@ -155,6 +155,15 @@ $ pnpm test:report
 $ pnpm test:report:view
 ```
 
+### Typechecking
+
+```sh
+# Typechecks all apps/packages, plus the root-level eslint.config.ts/vitest.config.ts
+$ pnpm typecheck
+```
+
+This runs `tsc --noEmit` (or `tsc -b --noEmit` where an app uses TypeScript project references) across every app and package. It's a required, blocking check in CI (`typecheck.yml`) so a broken type can't merge unnoticed.
+
 ### Linting
 
 We use eslint for linting the code. Please make sure you have the [eslint vscode extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) installed. All rules are defined under the `eslint-config` package.
@@ -212,12 +221,15 @@ Please read infra/Readme.md
 
 ## CI/CD
 
-Two GitHub Actions workflows run on this repository today:
+Three GitHub Actions workflows run on this repository today:
 
 | Workflow             | File                                                                               | Triggers                                   |
 | -------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------ |
+| Typecheck            | [`.github/workflows/typecheck.yml`](.github/workflows/typecheck.yml)               | PR opened, synchronised, or reopened       |
 | Code Coverage Report | [`.github/workflows/code-coverage.yml`](.github/workflows/code-coverage.yml)       | PR opened, synchronised, or reopened       |
 | React Doctor (web)   | [`.github/workflows/react-doctor-web.yml`](.github/workflows/react-doctor-web.yml) | PR touching `apps/web/**` or `packages/**` |
+
+**Typecheck** runs `pnpm typecheck` (`tsc` across every app/package, plus the root level `eslint.config.ts`/`vitest.config.ts`, which aren't part of any workspace project). Unlike the other two checks, this one is blocking by design: mark it as a required status check in branch protection once it's run at least once on this branch.
 
 **Code Coverage Report** runs the test suite, reads the coverage summary, and posts/updates a sticky PR comment with the line/statement/function/branch percentages. It warns below 70% but never fails the check — informational only, until the team is comfortable enough writing tests to enforce a floor.
 
