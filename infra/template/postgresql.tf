@@ -29,28 +29,12 @@ resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_azure_service
   end_ip_address   = "0.0.0.0"
 }
 
-output "postgresql_id" {
-  description = "The ID of the PostgreSQL Flexible Server"
-  value       = one(azurerm_postgresql_flexible_server.postgresql[*].id)
-}
-
-output "postgresql_fqdn" {
-  description = "The FQDN of the PostgreSQL Flexible Server"
-  value       = one(azurerm_postgresql_flexible_server.postgresql[*].fqdn)
-}
-
-output "postgresql_name" {
-  description = "The name of the PostgreSQL Flexible Server"
-  value       = one(azurerm_postgresql_flexible_server.postgresql[*].name)
-}
-
-output "postgresql_admin_login" {
-  description = "The administrator login for the PostgreSQL Flexible Server"
-  value       = one(azurerm_postgresql_flexible_server.postgresql[*].administrator_login)
-}
-
-output "postgresql_admin_password" {
-  description = "The administrator password for the PostgreSQL Flexible Server"
-  value       = one(azurerm_postgresql_flexible_server.postgresql[*].administrator_password)
-  sensitive   = true
+# Stored so the App Service can read it via a Key Vault reference
+# (@Microsoft.KeyVault(SecretUri=...)) in app_service.tf instead of the
+# plaintext administrator_password landing directly in app_settings.
+resource "azurerm_key_vault_secret" "postgresql_password" {
+  count        = var.enable_postgresql ? 1 : 0
+  name         = "POSTGRESQL-PASSWORD"
+  value        = random_password.postgresql_administrator_password.result
+  key_vault_id = azurerm_key_vault.key_vault.id
 }

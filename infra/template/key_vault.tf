@@ -45,19 +45,3 @@ resource "azurerm_role_assignment" "developers_secrets_role" {
   principal_id         = each.key
   depends_on           = [azurerm_role_assignment.admin_vault_role]
 }
-
-
-output "key_vault_id" {
-  description = "The ID of the Key Vault"
-  value       = azurerm_key_vault.key_vault.id
-}
-
-output "key_vault_uri" {
-  description = "The URI of the Key Vault"
-  value       = azurerm_key_vault.key_vault.vault_uri
-}
-
-output "key_vault_name" {
-  description = "The name of the Key Vault"
-  value       = azurerm_key_vault.key_vault.name
-}
