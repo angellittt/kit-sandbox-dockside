@@ -115,3 +115,23 @@ output "swa_publish_token" {
   value       = azurerm_static_web_app.static_web_app.api_key
   sensitive   = true
 }
+
+output "github_actions_identity_client_id" {
+  description = "Client ID of the GitHub Actions user-assigned identity. Store as the AZURE_CLIENT_ID secret on the matching GitHub Environment."
+  value       = azurerm_user_assigned_identity.github_actions.client_id
+}
+
+output "github_actions_identity_principal_id" {
+  description = "Principal ID of the GitHub Actions user-assigned identity."
+  value       = azurerm_user_assigned_identity.github_actions.principal_id
+}
+
+output "github_actions_identity_tenant_id" {
+  description = "Azure AD tenant ID. Store as the AZURE_TENANT_ID secret on the matching GitHub Environment."
+  value       = data.azurerm_client_config.current.tenant_id
+}
+
+output "github_actions_identity_subscription_id" {
+  description = "Azure subscription ID. Store as the AZURE_SUBSCRIPTION_ID secret on the matching GitHub Environment."
+  value       = var.subscription_id
+}

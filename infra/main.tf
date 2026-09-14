@@ -41,6 +41,11 @@ module "dev_environment" {
   # Set to true (plus their required variables) if your project needs them.
   enable_monitoring          = false
   enable_transactional_email = false
+  # GitHub Actions OIDC deploy identity — scopes deploy-api.yml/fe-web-deployment.yml's
+  # Azure login to this repo's "develop" GitHub Environment. See infra/Readme.md.
+  github_organization        = "tttstudios"
+  github_repository          = "Fullstack-starter-template"
+  github_actions_environment = "develop"
 }
 
 output "dev_env_outputs" {

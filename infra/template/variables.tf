@@ -134,6 +134,23 @@ variable "storage_container_name" {
   default     = "uploads"
 }
 
+# --- GitHub Actions OIDC deploy identity (see github_actions_identity.tf) ---
+
+variable "github_organization" {
+  description = "GitHub organization or user that owns the repository, used to scope the OIDC federated credential's trust subject"
+  type        = string
+}
+
+variable "github_repository" {
+  description = "GitHub repository name (without the org prefix), used to scope the OIDC federated credential's trust subject"
+  type        = string
+}
+
+variable "github_actions_environment" {
+  description = "Name of the GitHub Environment (Settings > Environments) that this Azure environment's deploy workflows run under. Must match the `environment:` value the deploy workflows resolve to for this environment_name."
+  type        = string
+}
+
 # --- Optional monitoring/alerting module (see monitoring.tf) ---
 
 variable "enable_monitoring" {

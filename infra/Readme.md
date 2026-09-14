@@ -18,17 +18,36 @@ You only need to execute this script once. After doing so, you can execute `terr
 
 The infrastructure is defined in `main.tf` using the `./template` module per environment. The template contains:
 
-| Resource                        | Purpose                                    | Connections                                                                                                                    |
-| ------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
-| **Resource Group**              | Container for all environment resources    | Parent of all resources                                                                                                        |
-| **Container Registry**          | Stores Docker images for the app           | App Service pulls images from it via managed identity (AcrPull role)                                                           |
-| **App Service Plan**            | Compute plan for the web app               | Hosts the App Service                                                                                                          |
-| **App Service**                 | Runs the application as a Docker container | Pulls images from Container Registry; reads secrets from Key Vault; writes files to Storage; optionally connects to PostgreSQL |
-| **Key Vault**                   | Stores secrets and credentials             | App Service has Key Vault Secrets User role; admins/developers assigned via RBAC                                               |
-| **Storage Account + Container** | Blob storage for file uploads              | App Service has Storage Blob Data Contributor role; connection info injected as app settings                                   |
-| **PostgreSQL Flexible Server**  | Managed PostgreSQL database (optional)     | Firewall rule allows Azure services; connection info injected as app settings on App Service                                   |
+| Resource                        | Purpose                                                                                  | Connections                                                                                                                                                                             |
+| ------------------------------- | ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Resource Group**              | Container for all environment resources                                                  | Parent of all resources                                                                                                                                                                 |
+| **Container Registry**          | Stores Docker images for the app                                                         | App Service pulls images from it via managed identity (AcrPull role)                                                                                                                    |
+| **App Service Plan**            | Compute plan for the web app                                                             | Hosts the App Service                                                                                                                                                                   |
+| **App Service**                 | Runs the application as a Docker container                                               | Pulls images from Container Registry; reads secrets from Key Vault; writes files to Storage; optionally connects to PostgreSQL                                                          |
+| **Key Vault**                   | Stores secrets and credentials                                                           | App Service has Key Vault Secrets User role; admins/developers assigned via RBAC                                                                                                        |
+| **Storage Account + Container** | Blob storage for file uploads                                                            | App Service has Storage Blob Data Contributor role; connection info injected as app settings                                                                                            |
+| **PostgreSQL Flexible Server**  | Managed PostgreSQL database (optional)                                                   | Firewall rule allows Azure services; connection info injected as app settings on App Service                                                                                            |
+| **GitHub Actions identity**     | Managed identity + OIDC federated credential, used to deploy without any stored password | Scoped to one GitHub Environment; AcrPush on Container Registry + Website Contributor on App Service (see [`template/github_actions_identity.tf`](template/github_actions_identity.tf)) |
 
 PostgreSQL provisioning is controlled by the `enable_postgresql` variable (default: `false`).
+
+## Deploying via GitHub Actions
+
+[`.github/workflows/deploy-api.yml`](../.github/workflows/deploy-api.yml) and [`.github/workflows/fe-web-deployment.yml`](../.github/workflows/fe-web-deployment.yml) deploy on push to `develop`/`qa`/`staging`/`main` (mapped 1:1 to GitHub Environments `develop`/`qa`/`staging`/`production`), or on demand via `workflow_dispatch`.
+
+Each Azure environment provisioned by a `./template` module call needs a matching GitHub Environment (repo Settings > Environments, same name as that module's `github_actions_environment` variable) configured with:
+
+| Name                              | Kind   | Source                                                                                                            |
+| --------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------- |
+| `AZURE_CLIENT_ID`                 | secret | `github_actions_identity_client_id` output                                                                        |
+| `AZURE_TENANT_ID`                 | secret | `github_actions_identity_tenant_id` output                                                                        |
+| `AZURE_SUBSCRIPTION_ID`           | secret | `github_actions_identity_subscription_id` output                                                                  |
+| `ACR_NAME`                        | var    | `container_registry_name` output                                                                                  |
+| `APP_SERVICE_NAME`                | var    | `app_service_name` output                                                                                         |
+| `AZURE_STATIC_WEB_APPS_API_TOKEN` | secret | Static Web App's deployment token — `az staticwebapp secrets list --name <name> --query properties.apiKey -o tsv` |
+| `VITE_API_BASE_URL`               | secret | Whatever base URL the web app should call for that environment                                                    |
+
+No default database migration step is wired into `deploy-api.yml` — this template ships no ORM/migration tool by default, so a commented-out placeholder step is left for whichever tool a project adds.
 
 ## Optional modules
 

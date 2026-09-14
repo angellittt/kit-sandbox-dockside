@@ -1,0 +1,60 @@
+name: Deploy web app to Azure Static Web Apps
+
+# Branch -> GitHub Environment mapping matches deploy-api.yml (1:1 except main -> production).
+# Each target environment needs its own GitHub Environment (Settings > Environments) with an
+# AZURE_STATIC_WEB_APPS_API_TOKEN secret set to the Static Web App's deployment token
+# (azurerm_static_web_app's `api_key` attribute — not the OIDC identity from
+# infra/template/github_actions_identity.tf, which this action doesn't use).
+on:
+  push:
+    branches:
+      - develop
+      - qa
+      - staging
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target GitHub Environment to deploy to
+        required: true
+        type: choice
+        options:
+          - develop
+          - qa
+          - staging
+          - production
+
+jobs:
+  deploy-web:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || github.ref_name == 'main' && 'production' || github.ref_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          # Keep in sync with ARG NODE_VERSION in apps/web/Dockerfile.
+          node-version: "24.14.0"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build web app
+        run: pnpm turbo build --filter=web
+        env:
+          # This template's web app only reads VITE_API_BASE_URL today (see
+          # apps/web/.env.example) — add further VITE_* secrets here as your project adds them.
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+
+      - name: Deploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          action: "upload"
+          app_location: "apps/web/dist" # App build output (built artifact) path
+          skip_app_build: true

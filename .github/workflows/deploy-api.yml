@@ -1,0 +1,102 @@
+name: Deploy API to Azure
+
+# Branch -> GitHub Environment mapping is 1:1 except main -> production. Each target
+# environment (develop/qa/staging/production) needs its own GitHub Environment
+# (Settings > Environments) configured with:
+#   - secrets: AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID (from the
+#     github_actions_identity_* Terraform outputs — see infra/template/github_actions_identity.tf)
+#   - vars: ACR_NAME, APP_SERVICE_NAME (from the container_registry_name/app_service_name
+#     Terraform outputs)
+# The federated credential's trust subject is scoped to one specific GitHub Environment
+# name (var.github_actions_environment in Terraform), so it must match the environment
+# name resolved below.
+on:
+  push:
+    branches:
+      - develop
+      - qa
+      - staging
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target GitHub Environment to deploy to
+        required: true
+        type: choice
+        options:
+          - develop
+          - qa
+          - staging
+          - production
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy API
+    runs-on: ubuntu-latest
+    environment: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || github.ref_name == 'main' && 'production' || github.ref_name }}
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          # Keep in sync with ARG NODE_VERSION in apps/api/Dockerfile.
+          node-version: "24.14.0"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Log in to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Log in to Azure Container Registry
+        run: az acr login --name ${{ vars.ACR_NAME }}
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            --target production \
+            --tag ${{ vars.ACR_NAME }}.azurecr.io/api:${{ github.sha }} \
+            --tag ${{ vars.ACR_NAME }}.azurecr.io/api:latest \
+            --file apps/api/Dockerfile \
+            .
+
+      - name: Push Docker image to ACR
+        run: |
+          docker push ${{ vars.ACR_NAME }}.azurecr.io/api:${{ github.sha }}
+          docker push ${{ vars.ACR_NAME }}.azurecr.io/api:latest
+
+      # This template ships no ORM/migration tool by default (each project picks its own).
+      # Add your project's migration command here once one exists, e.g.:
+      #
+      #   - name: Migrate database
+      #     run: pnpm --filter api db:migrate
+      #     env:
+      #       DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ vars.APP_SERVICE_NAME }}
+          images: ${{ vars.ACR_NAME }}.azurecr.io/api:${{ github.sha }}
+
+      - name: Log out of Azure
+        if: always()
+        run: az logout
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "::error::Deployment failed for commit ${{ github.sha }} to the ${{ github.event_name == 'workflow_dispatch' && inputs.environment || github.ref_name == 'main' && 'production' || github.ref_name }} environment. Check the logs above for details."
