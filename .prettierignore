@@ -20,6 +20,9 @@ coverage
 coverage.json
 
 
+# SBOMs generated locally by `pnpm sbom`
+/sbom/
+
 # Turborepo cache
 .turbo
 

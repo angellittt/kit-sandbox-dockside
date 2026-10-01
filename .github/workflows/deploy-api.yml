@@ -7,6 +7,10 @@ name: Deploy API to Azure
 #     github_actions_identity_* Terraform outputs — see infra/template/github_actions_identity.tf)
 #   - vars: ACR_NAME, APP_SERVICE_NAME (from the container_registry_name/app_service_name
 #     Terraform outputs)
+# Optional repo variables (see SBOM.md):
+#   - SBOM_ARTIFACT_ENABLED: "false" turns off the image SBOM step (on by default)
+#   - SBOM_ACR_ATTACH_ENABLED: "false" stops attaching the SBOM to the image in ACR
+#     (on by default, so the SBOM lives as long as the image)
 # The federated credential's trust subject is scoped to one specific GitHub Environment
 # name (var.github_actions_environment in Terraform), so it must match the environment
 # name resolved below.
@@ -37,6 +41,8 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    env:
+      DEPLOY_ENV: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || github.ref_name == 'main' && 'production' || github.ref_name }}
 
     steps:
       - name: Checkout repository
@@ -77,6 +83,18 @@ jobs:
         run: |
           docker push ${{ vars.ACR_NAME }}.azurecr.io/api:${{ github.sha }}
           docker push ${{ vars.ACR_NAME }}.azurecr.io/api:latest
+
+      # Artifact SBOM (client deliverable): npm deps + base image OS packages of
+      # the image built above. Runs after the push so it can optionally attach
+      # the SBOM to the image in ACR. Never blocks the deploy.
+      - name: Generate image SBOM
+        if: vars.SBOM_ARTIFACT_ENABLED != 'false'
+        continue-on-error: true
+        uses: ./.github/actions/sbom-image
+        with:
+          image: ${{ vars.ACR_NAME }}.azurecr.io/api:${{ github.sha }}
+          name: api-${{ env.DEPLOY_ENV }}-${{ github.sha }}
+          attach-to-registry: ${{ vars.SBOM_ACR_ATTACH_ENABLED != 'false' }}
 
       # This template ships no ORM/migration tool by default (each project picks its own).
       # Add your project's migration command here once one exists, e.g.:

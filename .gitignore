@@ -25,6 +25,9 @@ coverage.json
 /e2e/.auth/
 
 
+# SBOMs generated locally by `pnpm sbom`
+/sbom/
+
 # Turborepo cache
 .turbo
 

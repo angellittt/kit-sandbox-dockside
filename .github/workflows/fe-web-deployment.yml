@@ -5,6 +5,8 @@ name: Deploy web app to Azure Static Web Apps
 # AZURE_STATIC_WEB_APPS_API_TOKEN secret set to the Static Web App's deployment token
 # (azurerm_static_web_app's `api_key` attribute — not the OIDC identity from
 # infra/template/github_actions_identity.tf, which this action doesn't use).
+# Optional repo variable (see SBOM.md): SBOM_ARTIFACT_ENABLED = "false" turns off the
+# SBOM step (on by default).
 on:
   push:
     branches:
@@ -28,6 +30,8 @@ jobs:
   deploy-web:
     runs-on: ubuntu-latest
     environment: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || github.ref_name == 'main' && 'production' || github.ref_name }}
+    env:
+      DEPLOY_ENV: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || github.ref_name == 'main' && 'production' || github.ref_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -58,3 +62,19 @@ jobs:
           action: "upload"
           app_location: "apps/web/dist" # App build output (built artifact) path
           skip_app_build: true
+
+      # Artifact SBOM (client deliverable): the web app's production npm deps.
+      # The Vite bundle hides which packages it contains, so this reads the
+      # lockfile. Runs after Deploy so nothing it runs can touch apps/web/dist
+      # before the upload, and uses the cdxgen that pnpm installed from
+      # pnpm-lock.yaml (packages/sbom-tools), so its whole tree is locked.
+      # Never blocks the deploy.
+      - name: Generate web SBOM
+        if: vars.SBOM_ARTIFACT_ENABLED != 'false'
+        continue-on-error: true
+        uses: ./.github/actions/sbom-lockfile
+        with:
+          name: web-${{ env.DEPLOY_ENV }}-${{ github.sha }}
+          mode: prod
+          workspace: apps/web
+          cdxgen-bin: ${{ github.workspace }}/packages/sbom-tools/node_modules/.bin/cdxgen

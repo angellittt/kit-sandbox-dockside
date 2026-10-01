@@ -23,7 +23,9 @@
     "lint:fix": "turbo run lint:fix",
     "typecheck": "turbo run build --filter=@repo/vitest-config && tsc --noEmit -p tsconfig.json && turbo run typecheck",
     "format": "prettier . --write",
-    "format:check": "prettier . --check"
+    "format:check": "prettier . --check",
+    "sbom": "export CDXGEN=packages/sbom-tools/node_modules/.bin/cdxgen && bash .github/actions/sbom-lockfile/generate.sh --mode full --name source && bash .github/actions/sbom-lockfile/generate.sh --mode prod --name web --workspace apps/web",
+    "test:sbom": "node --test .github/actions/sbom-lockfile/*.test.mjs"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [

@@ -1,0 +1,44 @@
+name: Source SBOM
+
+# Source SBOM (internal): every package in pnpm-lock.yaml, dev deps included,
+# for build-time supply chain visibility. Uploaded as a workflow artifact.
+# Informational only, never blocks a merge. Set the repo variable
+# SBOM_SOURCE_ENABLED to "false" to turn it off. See SBOM.md.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: sbom-source-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  sbom:
+    if: vars.SBOM_SOURCE_ENABLED != 'false'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          # On a PR, check out the head commit instead of the default merge
+          # commit, so the SHA in the artifact name matches what was scanned.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      # No Node setup step: cdxgen only reads the lockfile, and the Node that
+      # ships on the runner is enough for that (and for the tests below).
+
+      - name: Test SBOM actions
+        run: node --test .github/actions/sbom-lockfile/*.test.mjs
+
+      - name: Generate source SBOM
+        uses: ./.github/actions/sbom-lockfile
+        with:
+          name: source-${{ github.event.pull_request.head.sha || github.sha }}
+          commit-sha: ${{ github.event.pull_request.head.sha || github.sha }}
+          mode: full
