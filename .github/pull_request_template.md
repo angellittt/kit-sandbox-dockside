@@ -32,6 +32,7 @@
 - [ ] Tests pass locally
 - [ ] Lint / format pass
 - [ ] Read the full diff in the GitHub UI
+- [ ] Each CodeRabbit comment fixed or replied to, then resolved
 - [ ] Docs updated (including `.env.example` if new environment variables were added)
 - [ ] PR title uses imperative tense (e.g. "Add feature" not "Added feature")
 - [ ] Code follows the project style guidelines

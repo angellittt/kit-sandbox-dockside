@@ -243,10 +243,48 @@ No branch is protected on this repository yet — the rules below are the conven
 
 - At least 1 approving review required before merging
 - Approvals are dismissed when new commits are pushed to the PR
+- All conversations must be resolved before merging (this is what makes CodeRabbit's comments count, see [Pull request reviews](#pull-request-reviews))
 - Required status checks must pass before merging: Code Coverage Report; lint and format checks (once those workflows are added)
 - Force pushes are blocked
 - Branch deletion is blocked
 - Administrators are not exempt from any of the above rules
+
+## Pull request reviews
+
+Every PR into `main` gets an AI review from [CodeRabbit](https://coderabbit.ai) first, then a human review. CodeRabbit is set up in [`.coderabbit.yaml`](.coderabbit.yaml).
+
+### The flow
+
+1. Open a PR. Drafts are skipped, so CodeRabbit reviews when you mark it ready for review.
+2. CodeRabbit reviews it. If it finds something, it leaves comments and a "request changes" review. Once the [GitHub settings for `main`](#github-settings-for-main) are on, the open comments block the merge: every conversation has to be resolved first. Don't count on the "request changes" review alone to block it; the conversation rule is the gate.
+3. The author handles each comment: fix it, or reply with why not, then resolve the conversation. Reply `@coderabbitai` in a thread to talk to it. Once the comments are handled, CodeRabbit approves.
+4. At least 1 human approves.
+
+CodeRabbit stays quiet about anything CI already checks (types and tests today; lint and format once those workflows are added). It only comments on what a human reviewer would otherwise have to catch: secrets, security issues, workflow permissions, weakened tests and loosened tooling rules.
+
+### GitHub settings for `main`
+
+In **Settings → Branches → Add branch ruleset** (or a classic branch protection rule) for `main`, turn on:
+
+- **Require a pull request before merging**, with **Required approvals: 1**
+- **Dismiss stale pull request approvals when new commits are pushed**
+- **Require conversation resolution before merging**, so every CodeRabbit conversation has to be resolved
+
+CodeRabbit also needs its GitHub app installed on the repo, from the company CodeRabbit subscription.
+
+### CODEOWNERS
+
+[`.github/CODEOWNERS`](.github/CODEOWNERS) has placeholder handles (`@your-github-handle`). Replace them with the real GitHub users or teams that own each folder, so GitHub asks the right people to review. If you also turn on **Require review from Code Owners**, the owner of each changed folder must approve.
+
+### Adjusting `.coderabbit.yaml` per project
+
+- **Review instructions**: add or edit entries in `reviews.path_instructions`. Each one is a glob plus plain-language rules for files that match, for example your project's own conventions in `apps/api/**`.
+- **Skipped files**: add `!glob` entries to `reviews.path_filters` for generated or vendored files.
+- **Tools**: every tool in CodeRabbit's schema is listed in `reviews.tools`, because a tool left out defaults to on. A tool is only on when CI doesn't already run it (for example gitleaks, semgrep, zizmor, actionlint, shellcheck, hadolint). If you add a tool to CI, turn it off in `reviews.tools` so findings aren't reported twice. If CI stops running one, turn it on. When CodeRabbit adds a tool to its schema, add it to the list too.
+- **Project docs**: `knowledge_base.code_guidelines.filePatterns` lists the docs CodeRabbit reads as review rules (`AGENTS.md`, `CONTEXT.md`, `Readme.md`, `.claude/skills/**`). Add any other conventions doc your project keeps.
+- **Tone and strictness**: `tone_instructions` and `reviews.profile` (`chill` or `assertive`).
+
+The first line of the file points editors at CodeRabbit's JSON schema, so VS Code (with the YAML extension) autocompletes and validates keys.
 
 ## Rationale
 
