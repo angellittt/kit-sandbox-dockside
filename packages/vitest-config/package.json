@@ -17,11 +17,11 @@
     "test-report": "nyc report -t coverage/merged --report-dir coverage/report --reporter=html --reporter=json-summary --exclude-after-remap false"
   },
   "dependencies": {
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.11"
   },
   "devDependencies": {
-    "@vitest/coverage-istanbul": "^4.0.18",
-    "@vitest/ui": "^4.0.18",
+    "@vitest/coverage-istanbul": "^4.1.11",
+    "@vitest/ui": "^4.1.11",
     "glob": "^13.0.6",
     "jsdom": "^28.1.0",
     "nyc": "^18.0.0",

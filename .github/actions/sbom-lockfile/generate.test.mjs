@@ -72,6 +72,7 @@ const setup = () => {
     stub,
     `#!/usr/bin/env bash
 echo "$@" > "${dir}/args"
+echo "\${FETCH_LICENSE:-}" > "${dir}/fetch-license"
 while [ $# -gt 0 ]; do
   if [ "$1" = "-o" ]; then cp "${fixture}" "$2"; fi
   shift
@@ -82,11 +83,11 @@ done
   return { dir, project, stub };
 };
 
-const run = (args, { stub }) =>
-  spawnSync("bash", [script, ...args], {
-    encoding: "utf8",
-    env: { ...process.env, CDXGEN: stub },
-  });
+const run = (args, { stub }) => {
+  const env = { ...process.env, CDXGEN: stub };
+  delete env.FETCH_LICENSE;
+  return spawnSync("bash", [script, ...args], { encoding: "utf8", env });
+};
 
 test("full mode keeps every component and asks cdxgen for CycloneDX 1.6", () => {
   const ctx = setup();
@@ -175,4 +176,19 @@ test("requires a name", () => {
   const r = run(["--mode", "full", "--path", ctx.project], ctx);
   assert.notEqual(r.status, 0);
   assert.match(r.stderr, /--name is required/);
+});
+
+test("--fetch-licenses asks cdxgen to look up licenses on the registry", () => {
+  const ctx = setup();
+  const base = ["--mode", "full", "--name", "x", "--path", ctx.project];
+  const out = ["--output-dir", path.join(ctx.dir, "out")];
+  const fetched = () =>
+    readFileSync(path.join(ctx.dir, "fetch-license"), "utf8").trim();
+
+  assert.equal(run([...base, ...out], ctx).status, 0);
+  assert.equal(fetched(), "");
+
+  const r = run([...base, "--fetch-licenses", ...out], ctx);
+  assert.equal(r.status, 0, r.stderr);
+  assert.equal(fetched(), "true");
 });

@@ -6,7 +6,7 @@ name: Deploy web app to Azure Static Web Apps
 # (azurerm_static_web_app's `api_key` attribute — not the OIDC identity from
 # infra/template/github_actions_identity.tf, which this action doesn't use).
 # Optional repo variable (see SBOM.md): SBOM_ARTIFACT_ENABLED = "false" turns off the
-# SBOM step (on by default).
+# SBOM step (on by default). The SBOM is also scanned with Grype (report only, never blocks).
 on:
   push:
     branches:
@@ -70,6 +70,7 @@ jobs:
       # pnpm-lock.yaml (packages/sbom-tools), so its whole tree is locked.
       # Never blocks the deploy.
       - name: Generate web SBOM
+        id: sbom
         if: vars.SBOM_ARTIFACT_ENABLED != 'false'
         continue-on-error: true
         uses: ./.github/actions/sbom-lockfile
@@ -78,3 +79,14 @@ jobs:
           mode: prod
           workspace: apps/web
           cdxgen-bin: ${{ github.workspace }}/packages/sbom-tools/node_modules/.bin/cdxgen
+
+      # Vulnerability + flagged license report for the web SBOM, in the job
+      # summary. Runs after the deploy so it never delays or blocks it.
+      - name: Scan web SBOM
+        if: ${{ !cancelled() && steps.sbom.outcome == 'success' }}
+        continue-on-error: true
+        uses: ./.github/actions/sbom-scan
+        with:
+          sbom-file: ${{ steps.sbom.outputs.sbom-file }}
+          name: web-${{ env.DEPLOY_ENV }}
+          fail-on: none

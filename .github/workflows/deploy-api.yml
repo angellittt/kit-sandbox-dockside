@@ -11,6 +11,7 @@ name: Deploy API to Azure
 #   - SBOM_ARTIFACT_ENABLED: "false" turns off the image SBOM step (on by default)
 #   - SBOM_ACR_ATTACH_ENABLED: "false" stops attaching the SBOM to the image in ACR
 #     (on by default, so the SBOM lives as long as the image)
+#   The image SBOM is also scanned with Grype (report only, never blocks).
 # The federated credential's trust subject is scoped to one specific GitHub Environment
 # name (var.github_actions_environment in Terraform), so it must match the environment
 # name resolved below.
@@ -88,6 +89,7 @@ jobs:
       # the image built above. Runs after the push so it can optionally attach
       # the SBOM to the image in ACR. Never blocks the deploy.
       - name: Generate image SBOM
+        id: sbom
         if: vars.SBOM_ARTIFACT_ENABLED != 'false'
         continue-on-error: true
         uses: ./.github/actions/sbom-image
@@ -109,6 +111,17 @@ jobs:
         with:
           app-name: ${{ vars.APP_SERVICE_NAME }}
           images: ${{ vars.ACR_NAME }}.azurecr.io/api:${{ github.sha }}
+
+      # Vulnerability + flagged license report for the image, in the job
+      # summary. Runs after the deploy so it never delays or blocks it.
+      - name: Scan image SBOM
+        if: ${{ !cancelled() && steps.sbom.outcome == 'success' }}
+        continue-on-error: true
+        uses: ./.github/actions/sbom-scan
+        with:
+          sbom-file: ${{ steps.sbom.outputs.sbom-file }}
+          name: api-${{ env.DEPLOY_ENV }}
+          fail-on: none
 
       - name: Log out of Azure
         if: always()

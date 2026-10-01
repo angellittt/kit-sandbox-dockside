@@ -223,12 +223,12 @@ Please read infra/Readme.md
 
 These GitHub Actions workflows run on pull requests:
 
-| Workflow             | File                                                                               | Triggers                                             |
-| -------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| Typecheck            | [`.github/workflows/typecheck.yml`](.github/workflows/typecheck.yml)               | PR opened, synchronised, or reopened                 |
-| Code Coverage Report | [`.github/workflows/code-coverage.yml`](.github/workflows/code-coverage.yml)       | PR opened, synchronised, or reopened                 |
-| React Doctor (web)   | [`.github/workflows/react-doctor-web.yml`](.github/workflows/react-doctor-web.yml) | PR touching `apps/web/**` or `packages/**`           |
-| Source SBOM          | [`.github/workflows/sbom-source.yml`](.github/workflows/sbom-source.yml)           | PR opened, synchronised, or reopened; push to `main` |
+| Workflow             | File                                                                               | Triggers                                                                                               |
+| -------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Typecheck            | [`.github/workflows/typecheck.yml`](.github/workflows/typecheck.yml)               | PR opened, synchronised, or reopened                                                                   |
+| Code Coverage Report | [`.github/workflows/code-coverage.yml`](.github/workflows/code-coverage.yml)       | PR opened, synchronised, or reopened                                                                   |
+| React Doctor (web)   | [`.github/workflows/react-doctor-web.yml`](.github/workflows/react-doctor-web.yml) | PR touching `apps/web/**` or `packages/**`                                                             |
+| Source SBOM          | [`.github/workflows/sbom-source.yml`](.github/workflows/sbom-source.yml)           | PR opened, synchronised, or reopened; push to `main`; daily schedule; manual run (`workflow_dispatch`) |
 
 **Typecheck** runs `pnpm typecheck` (`tsc` across every app/package, plus the root level `eslint.config.ts`/`vitest.config.ts`, which aren't part of any workspace project). Unlike the other two checks, this one is blocking by design: mark it as a required status check in branch protection once it's run at least once on this branch.
 
@@ -236,7 +236,7 @@ These GitHub Actions workflows run on pull requests:
 
 **React Doctor (web)** runs [react-doctor](https://github.com/millionco/react-doctor) React performance/correctness linting on changed files. Non-blocking (`blocking: none`); it's a heads-up, not a gate. It's scoped to PRs touching `apps/web/**` or `packages/**` even though its actual scan target is fixed to `apps/web` — a `packages/**`-only PR triggers a deliberate no-op run rather than being silently skipped, since a shared package change can still affect `apps/web`'s render behavior.
 
-**Source SBOM** writes a CycloneDX SBOM of the whole lockfile (dev deps included) and uploads it as a workflow artifact. The deploy workflows also produce an artifact SBOM (what actually ships) for every environment. Neither ever blocks a merge or a deploy. See [SBOM.md](SBOM.md) for toggles, local runs, and the section to send to client IT teams.
+**Source SBOM** writes a CycloneDX SBOM of the whole lockfile (dev deps included) and uploads it as a workflow artifact. Its **Vulnerability scan** job runs Grype on it and fails on fixable critical vulnerabilities (not a required check yet). The deploy workflows also produce an artifact SBOM (what actually ships) for every environment and scan it, report only. Nothing SBOM-related ever blocks a deploy. See [SBOM.md](SBOM.md) for toggles, suppressions, local runs, and the section to send to client IT teams.
 
 As this template grows a deploy pipeline (build/push a Docker image, run migrations, deploy to an environment), add it here as another row rather than a separate doc — this table should stay the one place that lists every workflow and what fires it.
 

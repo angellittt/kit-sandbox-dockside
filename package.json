@@ -24,8 +24,8 @@
     "typecheck": "turbo run build --filter=@repo/vitest-config && tsc --noEmit -p tsconfig.json && turbo run typecheck",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
-    "sbom": "export CDXGEN=packages/sbom-tools/node_modules/.bin/cdxgen && bash .github/actions/sbom-lockfile/generate.sh --mode full --name source && bash .github/actions/sbom-lockfile/generate.sh --mode prod --name web --workspace apps/web",
-    "test:sbom": "node --test .github/actions/sbom-lockfile/*.test.mjs"
+    "sbom": "export CDXGEN=packages/sbom-tools/node_modules/.bin/cdxgen && bash .github/actions/sbom-lockfile/generate.sh --mode full --name source --fetch-licenses && bash .github/actions/sbom-lockfile/generate.sh --mode prod --name web --workspace apps/web --fetch-licenses",
+    "test:sbom": "node --test .github/actions/sbom-*/*.test.mjs"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
@@ -51,6 +51,6 @@
     "prettier": "3.8.1",
     "turbo": "^2.8.12",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.11"
   }
 }
