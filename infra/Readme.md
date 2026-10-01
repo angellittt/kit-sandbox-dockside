@@ -5,6 +5,8 @@
 - Install terraform by following their [installation steps](https://developer.hashicorp.com/terraform/install).
 - Install azure cli by following their [installation steps](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 - Make sure your azure user has all required permissions (or ask an admin for them).
+  - With `enable_postgresql = true`, Terraform writes the Postgres admin password into each environment's Key Vault. The vault uses RBAC, and Contributor or Owner can't write secrets there, so Terraform gives every identity that runs it **Key Vault Secrets Officer** on each env's vault. That means the runner must be allowed to create role assignments (Owner, User Access Administrator, or Role Based Access Control Administrator). Anyone already in `key_vault_developers` keeps that assignment and no new one is added.
+  - List the object ID of each identity that runs `terraform apply` (the CI service principal, plus anyone who applies by hand) in `terraform_runner_object_ids`. If you leave it empty, the role goes to whoever ran the last apply, so a second runner takes it away from the first, and the first one's next plan fails with a 403. Get an object ID with `az ad signed-in-user show --query id -o tsv` (users) or `az ad sp show --id <app-id> --query id -o tsv` (service principals).
 - Make sure you have a valid subscription id or ask for one. See these [docs on how to find yours](https://learn.microsoft.com/en-us/azure/azure-portal/get-subscription-tenant-id).
 
 ## Getting started
@@ -30,6 +32,14 @@ The infrastructure is defined in `main.tf` using the `./template` module per env
 | **GitHub Actions identity**     | Managed identity + OIDC federated credential, used to deploy without any stored password | Scoped to one GitHub Environment; AcrPush on Container Registry + Website Contributor on App Service (see [`template/github_actions_identity.tf`](template/github_actions_identity.tf)) |
 
 PostgreSQL provisioning is controlled by the `enable_postgresql` variable (default: `false`).
+
+With Postgres on, Terraform waits before writing the password secret until the runner's Key Vault role has taken effect. It checks the vault with the Azure CLI every 10 seconds, for up to 10 minutes, by writing a disabled secret named `terraform-rbac-probe` (left in the vault on purpose; safe to ignore), so `az` must be on your PATH and logged in as the same identity Terraform runs as. The check stops right away, with az's own error, if az is missing, its login has expired, it is signed in as a different identity than Terraform, or it hits any error other than a 403. The check runs on the first apply and again whenever the vault's role holders or the identity running Terraform change. If it times out, run `terraform apply` again.
+
+If someone else later runs Terraform against an existing environment, they need read access to the vault's secrets too, since Terraform reads the password secret back on every plan. Add them to `key_vault_developers` (or `key_vault_administrators`).
+
+## Tests
+
+`pnpm terraform:test` runs `terraform test` in `infra/`. The tests use mocked providers and `plan` only, so they need no Azure login and never create anything. It also reads `terraform graph` to check that the Postgres password secret still waits for the Key Vault access check, since `terraform test` can't see `depends_on`.
 
 ## Deploying via GitHub Actions
 

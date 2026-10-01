@@ -75,6 +75,16 @@ variable "key_vault_developers" {
   }
 }
 
+variable "terraform_runner_object_ids" {
+  description = "Object IDs of every identity that runs terraform apply (e.g. the CI service principal and any admins who apply by hand). With Postgres on, each gets Key Vault Secrets Officer on the vault. Empty means only whoever is running Terraform right now."
+  type        = list(string)
+  default     = []
+  validation {
+    condition     = alltrue([for id in var.terraform_runner_object_ids : can(regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", id))])
+    error_message = "Each runner must be an Azure AD object ID (a GUID)."
+  }
+}
+
 variable "globally_unique_suffix" {
   description = "A short string that can be used in resources that need a property that must be globally unique"
   type        = string

@@ -37,4 +37,7 @@ resource "azurerm_key_vault_secret" "postgresql_password" {
   name         = "POSTGRESQL-PASSWORD"
   value        = random_password.postgresql_administrator_password.result
   key_vault_id = azurerm_key_vault.key_vault.id
+
+  # Wait until the runner's vault role has propagated (key_vault.tf).
+  depends_on = [null_resource.key_vault_rbac_propagation]
 }

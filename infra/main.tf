@@ -1,12 +1,14 @@
 terraform {
+  # mock_provider/override_data in infra/tests need 1.7+.
+  required_version = ">= 1.7"
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "=4.1.0"
     }
-    # Only used by the optional transactional-email module (see
-    # infra/template/dns.tf) to poll domain verification via a local-exec
-    # provisioner.
+    # Used by local-exec pollers: email domain verification
+    # (infra/template/dns.tf) and Key Vault RBAC propagation before the Postgres
+    # password secret is written (infra/template/key_vault.tf).
     null = {
       source  = "hashicorp/null"
       version = "~> 3.0"
@@ -37,6 +39,9 @@ module "dev_environment" {
   # Replace with your own email addresses
   key_vault_administrators = ["juan.lopez@ttt.studio", "justin.kuan@ttt.studio"]
   key_vault_developers     = ["sunny.xue@ttt.studio"]
+  # Object IDs of everyone who runs terraform apply (CI service principal,
+  # admins). Used when enable_postgresql is true; see infra/Readme.md.
+  terraform_runner_object_ids = []
   # Optional modules, both opt-in and off by default — see infra/Readme.md.
   # Set to true (plus their required variables) if your project needs them.
   enable_monitoring          = false

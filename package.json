@@ -25,7 +25,8 @@
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "sbom": "export CDXGEN=packages/sbom-tools/node_modules/.bin/cdxgen && bash .github/actions/sbom-lockfile/generate.sh --mode full --name source --fetch-licenses && bash .github/actions/sbom-lockfile/generate.sh --mode prod --name web --workspace apps/web --fetch-licenses",
-    "test:sbom": "node --test .github/actions/sbom-*/*.test.mjs"
+    "test:sbom": "node --test .github/actions/sbom-*/*.test.mjs",
+    "terraform:test": "terraform -chdir=infra init -backend=false -input=false > /dev/null && terraform -chdir=infra test && ./infra/tests/check_secret_waits_for_rbac.sh"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
