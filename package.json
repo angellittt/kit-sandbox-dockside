@@ -1,5 +1,9 @@
 {
   "packageManager": "pnpm@10.30.3",
+  "engines": {
+    "node": "^24.14.0",
+    "pnpm": "10.30.3"
+  },
   "private": true,
   "scripts": {
     "prepare": "husky install",
@@ -26,7 +30,9 @@
     "format:check": "prettier . --check",
     "sbom": "export CDXGEN=packages/sbom-tools/node_modules/.bin/cdxgen && bash .github/actions/sbom-lockfile/generate.sh --mode full --name source --fetch-licenses && bash .github/actions/sbom-lockfile/generate.sh --mode prod --name web --workspace apps/web --fetch-licenses",
     "test:sbom": "node --test .github/actions/sbom-*/*.test.mjs",
-    "terraform:test": "terraform -chdir=infra init -backend=false -input=false > /dev/null && terraform -chdir=infra test && ./infra/tests/check_secret_waits_for_rbac.sh"
+    "terraform:test": "mise x -- terraform -chdir=infra init -backend=false -input=false > /dev/null && mise x -- terraform -chdir=infra test && mise x -- ./infra/tests/check_secret_waits_for_rbac.sh",
+    "check:tool-versions": "bash ./scripts/tool-versions/check-tool-versions.sh",
+    "test:tool-versions": "bash ./scripts/tool-versions/check-tool-versions.test.sh"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
@@ -36,8 +42,8 @@
       "prettier --write --ignore-unknown"
     ],
     "infra/**/*.tf": [
-      "bash -c 'cd infra && terraform fmt -check'",
-      "bash -c 'cd infra && terraform validate'"
+      "bash -c 'cd infra && mise x -- terraform fmt -check'",
+      "bash -c 'cd infra && mise x -- terraform validate'"
     ]
   },
   "devDependencies": {

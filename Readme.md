@@ -20,27 +20,54 @@ Fullstack-starter-template/
 
 ### Prerequisites
 
-#### Linux / macOS
+Every tool version (Node, pnpm, Terraform) is pinned in one file, [`mise.toml`](mise.toml). [mise](https://mise.jdx.dev) reads it and installs those exact versions, so your laptop, other laptops, and CI all run the same tools. CI uses the same file through `jdx/mise-action`.
+
+#### 1. Install mise
 
 ```sh
-# Download and install nvm:
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
+# Linux / macOS
+curl https://mise.run | sh
+# or: brew install mise
 
-# in lieu of restarting the shell
-\. "$HOME/.nvm/nvm.sh"
+# Windows
+winget install jdx.mise
+```
 
-# Download and install Node.js:
-nvm install 24
+Then hook mise into your shell so the pinned versions are on your `PATH` whenever you are inside this repo (see [activation docs](https://mise.jdx.dev/getting-started.html#activate-mise)):
 
-# Verify the Node.js version:
-node -v # Should print "v24.14.0".
+```sh
+# bash
+echo 'eval "$(mise activate bash)"' >> ~/.bashrc
+# zsh
+echo 'eval "$(mise activate zsh)"' >> ~/.zshrc
+```
 
-# Verify npm version:
-npm -v # Should print "11.9.0".
+```powershell
+# PowerShell (add to $PROFILE)
+mise activate pwsh | Out-String | Invoke-Expression
+```
 
-# Install pnpm
-$ npm install -g pnpm@latest-10
+On Windows, run the repo's shell scripts (`pnpm check:tool-versions`, `pnpm test:e2e`, git hooks) from Git Bash or WSL, since they are bash scripts.
 
+If mise isn't active in a shell (an IDE terminal, a GUI git client), `pnpm install` still fails with a clear "Unsupported engine" error on the wrong Node or pnpm, because `package.json` sets `engines` and `pnpm-workspace.yaml` sets `engineStrict: true`. The pre-commit hook runs Terraform through `mise x --`, so it works even without activation.
+
+#### 2. Install the pinned tools
+
+```sh
+# Trust this repo's mise.toml (first time only), then install everything in it.
+# Downloads are checked against the checksums in mise.lock.
+$ mise trust
+$ mise install
+
+# Verify
+$ node -v       # matches mise.toml
+$ pnpm -v       # matches mise.toml
+$ terraform -v  # matches mise.toml
+```
+
+#### 3. Install dependencies
+
+```sh
 # Install turbo for better developer experience (optional)
 $ pnpm add turbo --global
 
@@ -54,36 +81,28 @@ $ pnpm prepare
 $ pnpm build
 ```
 
-#### Windows
+#### Bumping a tool version
 
-```sh
-# Download and install Chocolatey:
-powershell -c "irm https://community.chocolatey.org/install.ps1|iex"
+1. Change the version in `mise.toml`.
+2. Refresh the checksums in `mise.lock`, then install:
 
-# Download and install Node.js:
-choco install nodejs --version="24.14.0"
+   ```sh
+   $ mise lock --platform linux-x64,linux-arm64,macos-arm64,macos-x64,windows-x64
+   $ mise install
+   ```
 
-# Verify the Node.js version:
-node -v # Should print "v24.14.0".
+3. A few files can't read `mise.toml` and keep a copy of the version. Update them too:
+   - root `package.json`: `packageManager` (pnpm) and `engines` (`node` as `^<node version>`, `pnpm` exact)
+   - `ARG NODE_VERSION` / `ARG PNPM_VERSION` in `apps/api/Dockerfile`, `apps/web/Dockerfile` and `Dockerfile.test`
+4. Run the drift check:
 
-# Verify npm version:
-npm -v # Should print "11.9.0".
+   ```sh
+   # Fails if any copy drifted from mise.toml, a pnpm version is hardcoded
+   # anywhere else, or a workflow sets up Node/pnpm on its own
+   $ pnpm check:tool-versions
+   ```
 
-# Install pnpm
-$ npm install -g pnpm@latest-10
-
-# Install turbo for better developer experience (optional)
-$ pnpm add turbo --global
-
-# Install all dependencies
-$ pnpm i
-
-# Install git hooks
-$ pnpm prepare
-
-# Build shared packages
-$ pnpm build
-```
+CI runs the same check, and its tests (`pnpm test:tool-versions`), in the Typecheck workflow. All workflows get their tools from `.github/actions/setup`, which also pins the mise version itself.
 
 ### Environment variables
 

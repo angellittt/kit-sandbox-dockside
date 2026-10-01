@@ -28,15 +28,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - uses: pnpm/action-setup@v6
-
-      - uses: actions/setup-node@v6
-        with:
-          # Keep in sync with ARG NODE_VERSION in apps/*/Dockerfile.
-          node-version: "24.14.0"
-          cache: pnpm
-
-      - run: pnpm install --frozen-lockfile
+      # Node, pnpm and Terraform from mise.toml, pnpm store cache, pnpm install.
+      - uses: ./.github/actions/setup
 
       - name: Run tests
         run: pnpm test

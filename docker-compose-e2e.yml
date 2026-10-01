@@ -79,12 +79,13 @@ services:
     # `corepack enable` writes global shims into the image's /usr/bin,
     # which the non-root host user we drop to can't write to - so we
     # drive pnpm through `corepack pnpm ...` instead, which only needs a
-    # writable cache dir (HOME=/tmp above).
+    # writable cache dir (HOME=/tmp above). `corepack install` reads the
+    # pnpm version from package.json's packageManager, so no copy lives here.
     command:
       [
         "sh",
         "-c",
-        "chown -R ${HOST_UID:-1000}:${HOST_GID:-1000} /app/node_modules /app/apps/api/node_modules /app/apps/web/node_modules /app/packages/vitest-config/node_modules /app/packages/eslint-config/node_modules && setpriv --reuid=${HOST_UID:-1000} --regid=${HOST_GID:-1000} --clear-groups --no-new-privs sh -c 'corepack prepare pnpm@10.30.3 --activate && corepack pnpm install --frozen-lockfile && corepack pnpm exec playwright test'",
+        "chown -R ${HOST_UID:-1000}:${HOST_GID:-1000} /app/node_modules /app/apps/api/node_modules /app/apps/web/node_modules /app/packages/vitest-config/node_modules /app/packages/eslint-config/node_modules && setpriv --reuid=${HOST_UID:-1000} --regid=${HOST_GID:-1000} --clear-groups --no-new-privs sh -c 'corepack install && corepack pnpm install --frozen-lockfile && corepack pnpm exec playwright test'",
       ]
     depends_on:
       web:

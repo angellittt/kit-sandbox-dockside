@@ -1,6 +1,7 @@
 terraform {
-  # mock_provider/override_data in infra/tests need 1.7+.
-  required_version = ">= 1.7"
+  # Floor at the mise.toml pin, so a Terraform run outside mise fails fast
+  # instead of applying with an older version.
+  required_version = ">= 1.16"
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"

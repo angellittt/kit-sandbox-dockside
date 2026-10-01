@@ -34,6 +34,5 @@
     "test": "vitest run",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
-  },
-  "packageManager": "pnpm@10.30.3"
+  }
 }

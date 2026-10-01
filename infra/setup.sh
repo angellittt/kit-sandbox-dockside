@@ -6,7 +6,8 @@ if [[ -f "$(dirname "$0")/backend.tf" ]]; then
   [[ "$CONFIRM" =~ ^[Yy]$ ]] || exit 0
 fi
 
-command -v terraform &>/dev/null || { echo "Error: terraform is not installed."; exit 1; }
+# Terraform comes from mise.toml, so setup uses the pinned version even if mise isn't active in this shell.
+command -v mise      &>/dev/null || { echo "Error: mise is not installed. See the setup steps in the root Readme."; exit 1; }
 command -v az        &>/dev/null || { echo "Error: azure CLI is not installed."; exit 1; }
 
 # We use the project name for the storage account, so we keep it short to avoid hitting Azure's 24 character limit when combined with the suffix.
@@ -74,8 +75,8 @@ git -C .. rm --cached infra/terraform.tfvars 2>/dev/null || true
 echo "Removed backend.tf and terraform.tfvars from .gitignore"
 
 cd "$(dirname "$0")"
-terraform init -reconfigure
+mise x -- terraform init -reconfigure
 
 echo ""
-echo "Done. Run 'terraform plan' to preview changes."
+echo "Done. Run 'terraform plan' to preview changes (or 'mise x -- terraform plan' if mise isn't active in your shell)."
 

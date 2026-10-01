@@ -36,17 +36,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - uses: pnpm/action-setup@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          # Keep in sync with ARG NODE_VERSION in apps/web/Dockerfile.
-          node-version: "24.14.0"
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      # Node, pnpm and Terraform from mise.toml, pnpm store cache, pnpm install.
+      - uses: ./.github/actions/setup
 
       - name: Build web app
         run: pnpm turbo build --filter=web
