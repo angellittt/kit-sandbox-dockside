@@ -7,6 +7,7 @@
 #   engineStrict in pnpm-workspace.yaml for anyone not using mise
 # - ARG NODE_VERSION / ARG PNPM_VERSION in apps/api/Dockerfile,
 #   apps/web/Dockerfile and Dockerfile.test
+# - `pnpm@<version>` in docker-compose*.yml commands
 # `pnpm check:tool-versions` fails if any of those drift from this file.
 #
 # After changing a version, run `mise lock` (see Readme) so mise.lock

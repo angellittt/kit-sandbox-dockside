@@ -1,0 +1,48 @@
+name: Lint
+
+# CI twin of the lint and format jobs in lefthook.yml's pre-commit hook.
+# The hook only checks staged files; this checks the whole repo, so a commit
+# made with `--no-verify` (or before hooks were installed) still gets caught.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: lint-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          # Nothing after checkout needs git auth, so keep the token off disk
+          # where install scripts or downloaded tools could read it.
+          persist-credentials: false
+
+      # Installs Node, pnpm and Terraform at the versions pinned in mise.toml.
+      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Lint workspace packages
+        run: pnpm lint
+
+      # Root-level files (e2e/, playwright.config.ts) don't belong to any
+      # workspace package, so turbo's lint task never sees them.
+      - name: Lint root files
+        run: pnpm lint:root
+
+      - name: Check formatting
+        run: pnpm format:check
+
+      # Fails if lefthook.yml and the PR workflows stop running the same checks.
+      - name: Check hook and CI parity
+        run: pnpm check:hook-parity
+
+      - name: Test hook and CI parity check
+        run: pnpm test:hook-parity

@@ -29,6 +29,11 @@
       "dependsOn": ["transit", "@repo/vitest-config#build"],
       "outputs": []
     },
+    "//#typecheck:root": {
+      "dependsOn": ["@repo/vitest-config#build"],
+      "inputs": ["tsconfig.json", "eslint.config.ts", "vitest.config.ts"],
+      "outputs": []
+    },
     "transit": {
       "dependsOn": ["^transit"]
     }

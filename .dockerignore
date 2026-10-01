@@ -57,7 +57,7 @@ volumes/
 # apps/*/docs. If either directory is later added at the repo root and is
 # needed inside a built image, update this to **/scripts/ or **/docs/.
 .github/
-.husky/
+lefthook.yml
 scripts/
 docs/
 sbom/

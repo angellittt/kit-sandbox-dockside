@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 # mise.toml is the single source of truth for tool versions. A few files
-# can't read it directly (Dockerfiles, package.json's packageManager and
-# engines fields), so they keep a copy of the version. This check fails if
-# any copy drifts from mise.toml, if a pnpm version is hardcoded anywhere
-# else, or if a GitHub workflow/action sets up Node/pnpm on its own instead
-# of using jdx/mise-action.
+# can't read it directly (Dockerfiles, docker-compose commands, and
+# package.json's packageManager and engines fields), so they keep a copy of
+# the version. This check fails if any copy drifts from mise.toml, if a pnpm
+# version is hardcoded anywhere else, or if a GitHub workflow/action sets up
+# Node/pnpm on its own instead of using jdx/mise-action.
 #
 # Usage: check-tool-versions.sh [repo-root]  (defaults to this repo)
 

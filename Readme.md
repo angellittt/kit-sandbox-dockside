@@ -71,11 +71,8 @@ $ terraform -v  # matches mise.toml
 # Install turbo for better developer experience (optional)
 $ pnpm add turbo --global
 
-# Install all dependencies
+# Install all dependencies (also installs the git hooks)
 $ pnpm i
-
-# Install git hooks
-$ pnpm prepare
 
 # Build shared packages
 $ pnpm build
@@ -209,8 +206,23 @@ $ pnpm format:check
 
 ### Git hooks
 
-Before every commit, a pre-commit hook will run to ensure all files follow the linting and formatting rules.
-Similarly, before pushing to remote, a pre-push hook will run tests for all projects.
+Git hooks are managed by [Lefthook](https://lefthook.dev) and configured in [`lefthook.yml`](lefthook.yml). `pnpm i` installs them. If you cloned the repo when it still used Husky, `pnpm i` also removes Husky's `core.hooksPath` setting for you.
+
+The rule: **if CI would fail, the commit fails first.** Each hook calls the same pnpm script or turbo task CI calls, so a check is defined once. `pnpm check:hook-parity` (run by the hook and by the Lint workflow) fails if the hooks and the PR workflows stop running the same checks.
+
+| Hook       | What runs                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| pre-commit | In parallel: Prettier on staged files (fixes are re-staged), `pnpm verify --affected` (lint, typecheck and unit tests), `pnpm lint:root` when root-level files (`e2e/`, root configs, the shared ESLint config) are staged, `pnpm terraform:fmt`/`terraform:validate` when `infra/**/*.tf` changes, `pnpm check:tool-versions`/`test:tool-versions` when a file with a pinned version changes, and `pnpm check:hook-parity` when `lefthook.yml`, `package.json` or a workflow changes |
+| pre-push   | `scripts/e2e-ci.sh` (the same script `e2e.yml` runs), unless the push only changes docs, `infra/` or `.github/`                                                                                                                                                                                                                                                                                                                                                                       |
+
+`--affected` limits turbo to the packages you changed (staged or not) plus the packages that depend on them. Turbo's cache skips anything already checked, so a small change with a warm cache takes a few seconds. `pnpm verify` without `--affected` runs every check on every package.
+
+Things to know:
+
+- Hooks run every command through `mise x --`, so they use the versions in `mise.toml` even from GUI git clients that don't load your shell profile. `mise` itself still has to be on the `PATH` git sees (see [Prerequisites](#prerequisites)).
+- Checks run on your working tree, not only the staged content. Unstaged edits in the same package are checked too.
+- Pre-push E2E needs Docker running. The first run builds the images and takes a couple of minutes, later runs take under a minute.
+- Hooks don't install in CI (`CI` is set) or when `LEFTHOOK=0`.
 
 On rare occasions, it may be necessary to bypass the git hooks:
 
@@ -221,7 +233,7 @@ git commit --no-verify
 git push --no-verify
 ```
 
-**Warning**: Only bypass the hooks for tests you don't own — e.g. an unrelated app's suite is already broken on `main` and you don't know how to fix it. Never use `--no-verify` to skip a test that's failing because of your own change; fix it or ask for help instead.
+**Warning**: Only bypass the hooks for tests you don't own, e.g. an unrelated app's suite is already broken on `main` and you don't know how to fix it. Never use `--no-verify` to skip a test that's failing because of your own change; fix it or ask for help instead.
 
 ### Creating a new package
 
@@ -245,11 +257,15 @@ These GitHub Actions workflows run on pull requests:
 | Workflow             | File                                                                               | Triggers                                                                                               |
 | -------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | Typecheck            | [`.github/workflows/typecheck.yml`](.github/workflows/typecheck.yml)               | PR opened, synchronised, or reopened                                                                   |
+| Lint                 | [`.github/workflows/lint.yml`](.github/workflows/lint.yml)                         | PR opened, synchronised, or reopened                                                                   |
+| Terraform            | [`.github/workflows/terraform.yml`](.github/workflows/terraform.yml)               | PR opened, synchronised, or reopened                                                                   |
 | Code Coverage Report | [`.github/workflows/code-coverage.yml`](.github/workflows/code-coverage.yml)       | PR opened, synchronised, or reopened                                                                   |
 | React Doctor (web)   | [`.github/workflows/react-doctor-web.yml`](.github/workflows/react-doctor-web.yml) | PR touching `apps/web/**` or `packages/**`                                                             |
 | Source SBOM          | [`.github/workflows/sbom-source.yml`](.github/workflows/sbom-source.yml)           | PR opened, synchronised, or reopened; push to `main`; daily schedule; manual run (`workflow_dispatch`) |
 
-**Typecheck** runs `pnpm typecheck` (`tsc` across every app/package, plus the root level `eslint.config.ts`/`vitest.config.ts`, which aren't part of any workspace project). Unlike the other two checks, this one is blocking by design: mark it as a required status check in branch protection once it's run at least once on this branch.
+**Typecheck** runs `pnpm typecheck` (`tsc` across every app/package, plus the root level `eslint.config.ts`/`vitest.config.ts`, which aren't part of any workspace project). Unlike Code Coverage, React Doctor and Source SBOM, this one is blocking by design: mark it as a required status check in branch protection once it's run at least once on this branch.
+
+**Lint** runs `pnpm lint` (ESLint in every workspace package), `pnpm lint:root` (ESLint on root-level files like `e2e/` and `playwright.config.ts`) and `pnpm format:check` (Prettier). **Terraform** runs `pnpm terraform:fmt` and `pnpm terraform:validate` against `infra/`, offline, so it needs no Azure credentials. Both are the CI twins of the pre-commit hook and are blocking: mark them as required status checks too.
 
 **Code Coverage Report** runs the test suite, reads the coverage summary, and posts/updates a sticky PR comment with the line/statement/function/branch percentages. It warns below 70% but never fails the check — informational only, until the team is comfortable enough writing tests to enforce a floor.
 
@@ -266,7 +282,7 @@ No branch is protected on this repository yet — the rules below are the conven
 - At least 1 approving review required before merging
 - Approvals are dismissed when new commits are pushed to the PR
 - All conversations must be resolved before merging (this is what makes CodeRabbit's comments count, see [Pull request reviews](#pull-request-reviews))
-- Required status checks must pass before merging: Code Coverage Report; lint and format checks (once those workflows are added)
+- Required status checks must pass before merging: Typecheck, Lint and Terraform
 - Force pushes are blocked
 - Branch deletion is blocked
 - Administrators are not exempt from any of the above rules
@@ -282,7 +298,7 @@ Every PR into `main` gets an AI review from [CodeRabbit](https://coderabbit.ai) 
 3. The author handles each comment: fix it, or reply with why not, then resolve the conversation. Reply `@coderabbitai` in a thread to talk to it. Once the comments are handled, CodeRabbit approves.
 4. At least 1 human approves.
 
-CodeRabbit stays quiet about anything CI already checks (types and tests today; lint and format once those workflows are added). It only comments on what a human reviewer would otherwise have to catch: secrets, security issues, workflow permissions, weakened tests and loosened tooling rules.
+CodeRabbit stays quiet about anything CI already checks (types, tests, lint and format). It only comments on what a human reviewer would otherwise have to catch: secrets, security issues, workflow permissions, weakened tests and loosened tooling rules.
 
 ### GitHub settings for `main`
 

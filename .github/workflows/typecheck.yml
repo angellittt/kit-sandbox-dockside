@@ -20,7 +20,7 @@ jobs:
   typecheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
 
       # Node, pnpm and Terraform from mise.toml plus the pnpm store cache.
       # Dependencies are installed below, after the fast tool-version checks.

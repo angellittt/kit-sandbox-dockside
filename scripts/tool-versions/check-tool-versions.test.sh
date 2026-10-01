@@ -66,6 +66,11 @@ FROM node:${NODE_VERSION}-alpine
 ARG PNPM_VERSION=10.30.3
 RUN corepack prepare pnpm@${PNPM_VERSION} --activate
 DOCKER
+  cat > "$repo/docker-compose-e2e.yml" <<'YAML'
+services:
+  playwright:
+    command: ["sh", "-c", "corepack prepare pnpm@10.30.3 --activate && corepack pnpm install"]
+YAML
   cat > "$repo/.github/workflows/ci.yml" <<'YAML'
 jobs:
   test:
@@ -296,6 +301,30 @@ test_fails_without_engine_strict() {
   expect_failure "$repo" engine-strict "engineStrict"
 }
 
+test_fails_on_compose_pnpm_drift() {
+  local repo="$TEST_TMP/compose-drift"
+  create_repo "$repo"
+  replace 's/pnpm@10.30.3/pnpm@9.0.0/' "$repo/docker-compose-e2e.yml"
+
+  expect_failure "$repo" compose-drift "docker-compose-e2e.yml"
+}
+
+test_passes_on_compose_pnpm_followed_by_delimiter() {
+  local repo="$TEST_TMP/compose-delim"
+  create_repo "$repo"
+  replace 's/pnpm@10.30.3 --activate/pnpm@10.30.3; corepack enable/' "$repo/docker-compose-e2e.yml"
+
+  expect_pass "$repo" compose-delim
+}
+
+test_fails_on_compose_pnpm_non_literal_dots() {
+  local repo="$TEST_TMP/compose-dots"
+  create_repo "$repo"
+  replace 's/pnpm@10.30.3/pnpm@10x30x3/' "$repo/docker-compose-e2e.yml"
+
+  expect_failure "$repo" compose-dots "docker-compose-e2e.yml"
+}
+
 test_fails_on_hardcoded_workflow_node_version() {
   local repo="$TEST_TMP/workflow-node"
   create_repo "$repo"
@@ -369,6 +398,9 @@ tests=(
   test_fails_on_engines_node_drift
   test_fails_on_engines_pnpm_drift
   test_fails_without_engine_strict
+  test_fails_on_compose_pnpm_drift
+  test_passes_on_compose_pnpm_followed_by_delimiter
+  test_fails_on_compose_pnpm_non_literal_dots
   test_fails_on_hardcoded_workflow_node_version
   test_fails_on_workflow_pnpm_action_setup
   test_fails_on_setup_node_in_composite_action
