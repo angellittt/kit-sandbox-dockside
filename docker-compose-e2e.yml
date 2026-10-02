@@ -71,6 +71,9 @@ services:
       # The repo (including .git) is mounted below, so without this the
       # container's `pnpm install` would rewrite the host's git hooks.
       LEFTHOOK: "0"
+      # Passes GitHub Actions' CI=true through so playwright.config.ts turns
+      # on forbidOnly and retries. Empty locally, so `.only` still works there.
+      CI: ${CI:-}
     volumes:
       - .:/app
       - /app/node_modules

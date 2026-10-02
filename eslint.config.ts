@@ -1,5 +1,6 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 import baseEslintConfig from "@repo/eslint-config/eslint.base.config";
+import { disableRulesCoveredByOxlint } from "@repo/eslint-config/oxlint";
 
 export default defineConfig([
   // vitest.config.ts isn't included in any workspace tsconfig, so typed
@@ -17,4 +18,5 @@ export default defineConfig([
       },
     },
   },
+  ...disableRulesCoveredByOxlint(`${import.meta.dirname}/.oxlintrc.json`),
 ]);

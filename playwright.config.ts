@@ -7,6 +7,9 @@ export default defineConfig({
   testDir: "./e2e",
   fullyParallel: false,
   workers: 1,
+  // Fail CI if a test.only is committed; vitest/no-focused-tests doesn't
+  // recognize Playwright's test.
+  forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: [["html", { open: "never" }]],
   globalSetup: "./e2e/support/globalSetup.ts",

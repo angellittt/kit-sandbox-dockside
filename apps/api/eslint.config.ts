@@ -1,13 +1,7 @@
 import baseEslintConfig from "@repo/eslint-config/eslint.base.config";
+import { disableRulesCoveredByOxlint } from "@repo/eslint-config/oxlint";
 import { defineConfig } from "eslint/config";
 export default defineConfig([
   ...baseEslintConfig,
-  {
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.eslint.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
-  },
+  ...disableRulesCoveredByOxlint(`${import.meta.dirname}/.oxlintrc.json`),
 ]);

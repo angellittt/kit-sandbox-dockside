@@ -32,13 +32,17 @@ pre-commit:
 
     # Root-level files (e2e/, playwright.config.ts) don't belong to any
     # workspace package, so turbo's lint task never sees them. The globs match
-    # what `pnpm lint:root` lints, plus the shared config the root
-    # eslint.config.ts pulls in, so a rule change there re-lints the root too.
+    # what `pnpm lint:root` lints, plus the shared configs the root
+    # eslint.config.ts and .oxlintrc.json pull in, so a rule change there
+    # re-lints the root too.
     - name: lint root files
       glob:
         - "*.{ts,tsx,js,jsx}"
         - "e2e/**/*.{ts,tsx,js,jsx}"
         - "packages/eslint-config/src/eslint.base.config.ts"
+        - "packages/eslint-config/src/oxlint.ts"
+        - ".oxlintrc.json"
+        - "packages/oxlint-config/base.json"
       run: mise x -- pnpm lint:root
 
     - name: terraform

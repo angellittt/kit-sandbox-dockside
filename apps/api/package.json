@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@repo/oxlint-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
@@ -23,6 +24,7 @@
     "axios": "^1.18.0",
     "eslint": "^10.0.3",
     "jiti": "^2.6.1",
+    "oxlint": "^1.85.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^4.1.11"
@@ -32,7 +34,7 @@
     "build": "tsc --project tsconfig.app.json",
     "typecheck": "tsc -b --noEmit",
     "test": "vitest run",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint": "oxlint && eslint .",
+    "lint:fix": "oxlint --fix; ox=$?; eslint . --fix && exit $ox"
   }
 }

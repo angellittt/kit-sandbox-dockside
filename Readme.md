@@ -11,6 +11,7 @@ Fullstack-starter-template/
 │   └── web/            # React frontend (Vite, TypeScript)
 ├── packages/
 │   ├── eslint-config/  # Shared ESLint configuration
+│   ├── oxlint-config/  # Shared oxlint configuration and custom lint rules
 │   └── vitest-config/  # Shared Vitest configuration and coverage setup
 ├── infra/              # Terraform infrastructure as code (Azure)
 └── .github/            # GitHub Actions workflows, templates, and CODEOWNERS
@@ -182,16 +183,46 @@ This runs `tsc --noEmit` (or `tsc -b --noEmit` where an app uses TypeScript proj
 
 ### Linting
 
-We use eslint for linting the code. Please make sure you have the [eslint vscode extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) installed. All rules are defined under the `eslint-config` package.
+Linting runs in two steps: [oxlint](https://oxc.rs/docs/guide/usage/linter) first, then ESLint.
+
+- **oxlint** is a linter written in Rust, 50 to 100 times faster than ESLint. It runs most of our rules (core JS, TypeScript, import, promise, React, React hooks, JSX a11y) plus our own custom rules. Its config lives in `packages/oxlint-config` (`base.json`, `react.json`), and each app extends it from its own `.oxlintrc.json`.
+- **ESLint** only runs the rules oxlint doesn't have yet: `eslint-plugin-security`, `turbo/no-undeclared-env-vars`, `prefer-arrow-functions`, `import-x/order`, `import-x/no-unresolved` and a few React Compiler rules. Its config lives in `packages/eslint-config`. [eslint-plugin-oxlint](https://github.com/oxc-project/eslint-plugin-oxlint) turns off every ESLint rule that oxlint already runs, so no rule runs twice.
+
+To turn off a rule on one line, use the comment for the tool that runs it:
+
+- Rules oxlint runs: `// oxlint-disable-next-line <rule> -- <reason>`
+- ESLint-only rules (listed above): `// eslint-disable-next-line <rule> -- <reason>`
+
+Don't use `eslint-disable` for a rule oxlint runs. oxlint obeys it, but ESLint reports it as an unused directive and fails, and `pnpm lint:fix` deletes it.
+
+Install the [oxc](https://marketplace.visualstudio.com/items?itemName=oxc.oxc-vscode) and [eslint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) VS Code extensions to see both in your editor.
 **Note**: If you want to add the linter rules under your app, you must install `jiti` as a dev dependency. See more info on [how to use typescript configuration files here](https://eslint.org/docs/latest/use/configure/configuration-files#typescript-configuration-files)
 
 ```sh
-# Runs linter in all apps/packages
+# Runs oxlint, then ESLint, in all apps/packages
 $ pnpm lint
-# Runs linter in all apps/packages and fixes all automatically fixable issues
+# Same, and fixes all automatically fixable issues
 $ pnpm lint:fix
-
+# Lints root-level files (e2e/, root configs)
+$ pnpm lint:root
 ```
+
+To move a rule from ESLint to oxlint, add it to `packages/oxlint-config/base.json` (or `react.json`). ESLint stops running it on its own. Check the [oxlint rule list](https://oxc.rs/docs/guide/usage/linter/rules) first.
+
+#### Writing a custom lint rule
+
+Team conventions can be lint errors instead of notes in a doc. Custom rules live in the `repo` plugin in `packages/oxlint-config/src/plugins/`. Example: `repo/no-direct-axios` makes the web app use the shared client in `src/lib/axios` instead of importing `axios` directly.
+
+1. Add a rule file in `packages/oxlint-config/src/plugins/rules/`. Rules use the same API as ESLint rules (`meta` + `create`), wrapped in `defineRule` from `@oxlint/plugins`. Use `no-direct-axios.ts` as a template.
+2. Add a test next to it in `rules/__tests__/`, using `RuleTester` from `oxlint/plugins-dev`. List code that should pass (`valid`) and code that should fail (`invalid`).
+3. Register the rule in `src/plugins/repo-conventions.ts`.
+4. Turn it on in the `.oxlintrc.json` of the app that should follow it, as `"repo/<rule-name>": "error"`. Use `overrides` to turn it off for files that are allowed to break it.
+5. Run `pnpm --filter @repo/oxlint-config test` and `pnpm lint`.
+
+Things to know:
+
+- oxlint loads the plugin as TypeScript without a build step (Node's built-in type stripping). Keep the code plain TypeScript (no `enum` or `namespace`) and keep the `.ts` extension on relative imports.
+- oxlint JS plugins are still in alpha and can't use type information. [Docs](https://oxc.rs/docs/guide/usage/linter/writing-js-plugins).
 
 ### Formatting
 

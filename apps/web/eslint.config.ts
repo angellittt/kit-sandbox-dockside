@@ -1,14 +1,9 @@
 import reactEslintConfig from "@repo/eslint-config/eslint.react.config";
+import { disableRulesCoveredByOxlint } from "@repo/eslint-config/oxlint";
 import { defineConfig } from "eslint/config";
 export default defineConfig([
   ...reactEslintConfig,
   {
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.eslint.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
     rules: {
       "import-x/no-unresolved": [
         "error",
@@ -21,4 +16,5 @@ export default defineConfig([
       ],
     },
   },
+  ...disableRulesCoveredByOxlint(`${import.meta.dirname}/.oxlintrc.json`),
 ]);

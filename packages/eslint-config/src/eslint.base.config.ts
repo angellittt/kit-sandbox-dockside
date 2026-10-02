@@ -15,6 +15,11 @@ import { configs as preferArrowFunctionsConfigs } from "eslint-plugin-prefer-arr
 
 export default defineConfig([
   globalIgnores(["dist"]),
+  {
+    // A stale eslint-disable comment hides nothing, but it misleads readers
+    // and silently re-enables suppression if the rule comes back.
+    linterOptions: { reportUnusedDisableDirectives: "error" },
+  },
   js.configs.recommended,
   preferArrowFunctionsConfigs.all,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- flatConfigs.recommended's languageOptions type conflicts with defineConfig's expected ConfigWithExtends across the @typescript-eslint/utils and @eslint/config-helpers versions in this repo

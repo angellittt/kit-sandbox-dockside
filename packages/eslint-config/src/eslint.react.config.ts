@@ -1,25 +1,18 @@
 import { defineConfig } from "eslint/config";
 import baseConfig from "./eslint.base.config.js";
 import eslintConfigPrettier from "eslint-config-prettier";
-import reactPlugin from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
-// @ts-ignore - No types available for eslint-plugin-jsx-a11y
-import jsxA11y from "eslint-plugin-jsx-a11y";
 import globals from "globals";
-import reactRefresh from "eslint-plugin-react-refresh";
 
+/* React, JSX a11y and React Refresh rules run in oxlint (see
+ * packages/oxlint-config/react.json). ESLint keeps react-hooks only for the
+ * few React Compiler rules oxlint doesn't have yet (config, gating,
+ * component-hook-factories).
+ */
 export default defineConfig([
   ...baseConfig,
-  reactPlugin.configs.flat["jsx-runtime"],
   reactHooks.configs.flat.recommended,
-  reactRefresh.configs.vite,
-  jsxA11y.flatConfigs.recommended,
   {
-    settings: {
-      react: {
-        version: "detect",
-      },
-    },
     files: ["**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}"],
     languageOptions: {
       parserOptions: {

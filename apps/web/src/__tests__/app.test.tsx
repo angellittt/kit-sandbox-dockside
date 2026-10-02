@@ -5,7 +5,9 @@ import App from "@/App";
 describe("App", () => {
   it("should render a button", async () => {
     await render(<App />);
-    screen.getByRole("button", { name: /increment/i });
+    expect(
+      screen.getByRole("button", { name: /increment/i }),
+    ).toBeInTheDocument();
   });
   it("should increment count on button click", async () => {
     const { user } = await render(<App />);
