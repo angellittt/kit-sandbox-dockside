@@ -18,6 +18,8 @@ node_modules
 # Testing
 coverage
 coverage.json
+# Probe folders left by an interrupted claude-hooks integration test
+packages/claude-hooks/.tmp-*/
 
 # Playwright
 /playwright-report/

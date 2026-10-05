@@ -10,10 +10,12 @@ Fullstack-starter-template/
 │   ├── api/            # Express backend (Node.js, TypeScript)
 │   └── web/            # React frontend (Vite, TypeScript)
 ├── packages/
+│   ├── claude-hooks/   # Claude Code hooks (see "AI agent hooks")
 │   ├── eslint-config/  # Shared ESLint configuration
 │   ├── oxlint-config/  # Shared oxlint configuration and custom lint rules
 │   └── vitest-config/  # Shared Vitest configuration and coverage setup
 ├── infra/              # Terraform infrastructure as code (Azure)
+├── .claude/            # Claude Code settings, hooks and skills shared by the team
 └── .github/            # GitHub Actions workflows, templates, and CODEOWNERS
 ```
 
@@ -264,7 +266,28 @@ git commit --no-verify
 git push --no-verify
 ```
 
-**Warning**: Only bypass the hooks for tests you don't own, e.g. an unrelated app's suite is already broken on `main` and you don't know how to fix it. Never use `--no-verify` to skip a test that's failing because of your own change; fix it or ask for help instead.
+**Warning**: Only bypass the hooks for tests you don't own, e.g. an unrelated app's suite is already broken on `main` and you don't know how to fix it. Never use `--no-verify` to skip a test that's failing because of your own change; fix it or ask for help instead. AI agents in Claude Code are blocked from the common ways to bypass the hooks (see [AI agent hooks](#ai-agent-hooks)).
+
+### AI agent hooks
+
+When a check fails, AI agents sometimes take a shortcut: `git commit --no-verify`, an `it.skip`, an `eslint-disable`. Asking them not to in the docs isn't enough, so this repo ships [Claude Code hooks](https://code.claude.com/docs/en/hooks) that block those shortcuts. They are committed in [`.claude/settings.json`](.claude/settings.json), so they are active for everyone who runs Claude Code in this repo. The code is small and lives in [`packages/claude-hooks`](packages/claude-hooks), with tests.
+
+| When                                  | What the hook does                                                                                                                                                                                                                             |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Before Claude runs a shell command    | **Blocks** anything that skips the git hooks: `--no-verify`, `git commit -n`, `LEFTHOOK=0` / `LEFTHOOK=false`, `LEFTHOOK_EXCLUDE=...`, `HUSKY=0`, changing `core.hooksPath`, `lefthook uninstall`. Also inside `&&` chains and `bash -c "..."` |
+| After Claude edits or writes a file   | Runs Prettier (writes the fix), then oxlint and ESLint on that file, with the repo's own config. Errors go straight back to Claude so it fixes them before moving on                                                                           |
+| After an edit adds a check suppressor | **Warns** Claude to justify or remove it: `eslint-disable`, `@ts-ignore`, `@ts-nocheck`, `@ts-expect-error`, `.skip(`, `.only(`, `.fixme(`, `xit(`, `fit(`, `xdescribe(`, `fdescribe(`. A warning, not a block, since some are legitimate      |
+
+When a command is blocked, Claude sees: "Bypassing checks is not allowed. Fix the failing check and commit again."
+
+Things to know:
+
+- The hooks are TypeScript run straight from source, so they need the Node version from `mise.toml`. `.claude/hooks/run-hook.sh` runs them through `mise exec` when mise is installed, and falls back to `node` from your `PATH` when it isn't.
+- If the shell command hook can't start (for example `mise.toml` not trusted, or no mise and the `node` on your `PATH` is too old) or takes too long, the command is **blocked** with setup steps, instead of silently letting it through. `run-hook.sh` stops the hook itself a few seconds before Claude Code's own `timeout`, because a hook that Claude Code times out lets the command through.
+- Only the shell command hook can block. The edit hooks run after the file is already written, so if they can't run, Claude gets the setup steps but the edit stays, unformatted and unlinted.
+- Linting a file after an edit takes several seconds, mostly ESLint starting up. oxlint adds about half a second.
+- Only Claude Code's tool calls are checked. Commands you type in your own terminal aren't affected; Lefthook still covers those.
+- The command check is a best-effort parser, not a full shell. It catches the common forms, not every possible trick. The CI workflows are still the final gate.
 
 ### Creating a new package
 
