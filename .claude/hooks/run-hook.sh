@@ -13,7 +13,9 @@ root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 script="$root/packages/claude-hooks/src/bin/$hook.ts"
 
 if command -v mise >/dev/null 2>&1; then
-  mise exec --cd "$root" -- node "$script" <&0 &
+  # No auto-install: a tool that isn't installed yet (say, Preloop) must not
+  # stop the hooks from running. The push gate reports a missing Preloop itself.
+  MISE_EXEC_AUTO_INSTALL=0 mise exec --cd "$root" -- node "$script" <&0 &
 else
   node "$script" <&0 &
 fi
@@ -34,6 +36,8 @@ if [ "$status" -ne 0 ] && [ "$status" -ne 2 ]; then
   fi
   if [ "$hook" = "pre-bash" ]; then
     outcome="so this command was blocked"
+  elif [ "$hook" = "pre-edit" ]; then
+    outcome="so this edit was blocked"
   else
     # PostToolUse runs after the edit, so it can't undo it; exit 2 only shows Claude this message.
     outcome="so the edited file was not formatted or linted"

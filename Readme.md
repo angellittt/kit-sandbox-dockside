@@ -81,6 +81,25 @@ $ pnpm i
 $ pnpm build
 ```
 
+#### 4. Set up Preloop (required if you use an AI agent)
+
+Claude Code can't push or open a PR in this repo until every PR check passes locally in [Preloop](https://preloop.dev) (see [Local CI with Preloop](#local-ci-with-preloop)). A hook blocks its push and PR commands. It is best-effort, and pushes you type in your own terminal aren't gated. Most of the team uses an agent, so treat this as a normal setup step. `mise install` already installed the `preloop` CLI.
+
+```sh
+# Verify
+$ preloop version   # matches mise.toml
+
+# Connect Preloop to GitHub with a fine-grained personal access token (PAT)
+$ preloop setup github --via pat --repo tttstudios/Fullstack-starter-template
+
+# Check it worked
+$ preloop doctor --repo tttstudios/Fullstack-starter-template
+```
+
+Keep **about 80GB of disk free**. The first run downloads the GitHub runner VM image (about 9GB) and unpacks it to almost 50GB. See [Preloop's setup docs](https://github.com/preloopdev/preloop/blob/main/docs/setup.md) for which PAT permissions to grant.
+
+If you only push by hand from your own terminal, you can skip this step. Lefthook still checks your commits and pushes.
+
 #### Bumping a tool version
 
 1. Change the version in `mise.toml`.
@@ -272,11 +291,13 @@ git push --no-verify
 
 When a check fails, AI agents sometimes take a shortcut: `git commit --no-verify`, an `it.skip`, an `eslint-disable`. Asking them not to in the docs isn't enough, so this repo ships [Claude Code hooks](https://code.claude.com/docs/en/hooks) that block those shortcuts. They are committed in [`.claude/settings.json`](.claude/settings.json), so they are active for everyone who runs Claude Code in this repo. The code is small and lives in [`packages/claude-hooks`](packages/claude-hooks), with tests.
 
-| When                                  | What the hook does                                                                                                                                                                                                                             |
-| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Before Claude runs a shell command    | **Blocks** anything that skips the git hooks: `--no-verify`, `git commit -n`, `LEFTHOOK=0` / `LEFTHOOK=false`, `LEFTHOOK_EXCLUDE=...`, `HUSKY=0`, changing `core.hooksPath`, `lefthook uninstall`. Also inside `&&` chains and `bash -c "..."` |
-| After Claude edits or writes a file   | Runs Prettier (writes the fix), then oxlint and ESLint on that file, with the repo's own config. Errors go straight back to Claude so it fixes them before moving on                                                                           |
-| After an edit adds a check suppressor | **Warns** Claude to justify or remove it: `eslint-disable`, `@ts-ignore`, `@ts-nocheck`, `@ts-expect-error`, `.skip(`, `.only(`, `.fixme(`, `xit(`, `fit(`, `xdescribe(`, `fdescribe(`. A warning, not a block, since some are legitimate      |
+| When                                  | What the hook does                                                                                                                                                                                                                                 |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Before Claude runs a shell command    | **Blocks** anything that skips the git hooks: `--no-verify`, `git commit -n`, `LEFTHOOK=0` / `LEFTHOOK=false`, `LEFTHOOK_EXCLUDE=...`, `HUSKY=0`, changing `core.hooksPath`, `lefthook uninstall`. Also inside `&&` chains and `bash -c "..."`     |
+| After Claude edits or writes a file   | Runs Prettier (writes the fix), then oxlint and ESLint on that file, with the repo's own config. Errors go straight back to Claude so it fixes them before moving on                                                                               |
+| Before Claude pushes or opens a PR    | **Blocks** `git push`, `gh pr create` (or a `gh api` call that creates a PR), `preloop push` and `preloop run --push` until `pnpm ci:local` has passed for the current commit on a clean tree. See [Local CI with Preloop](#local-ci-with-preloop) |
+| Before Claude writes the pass stamp   | **Blocks** any Edit/Write or shell command that names `.git/preloop-pass` and could write it                                                                                                                                                       |
+| After an edit adds a check suppressor | **Warns** Claude to justify or remove it: `eslint-disable`, `@ts-ignore`, `@ts-nocheck`, `@ts-expect-error`, `.skip(`, `.only(`, `.fixme(`, `xit(`, `fit(`, `xdescribe(`, `fdescribe(`. A warning, not a block, since some are legitimate          |
 
 When a command is blocked, Claude sees: "Bypassing checks is not allowed. Fix the failing check and commit again."
 
@@ -288,6 +309,51 @@ Things to know:
 - Linting a file after an edit takes several seconds, mostly ESLint starting up. oxlint adds about half a second.
 - Only Claude Code's tool calls are checked. Commands you type in your own terminal aren't affected; Lefthook still covers those.
 - The command check is a best-effort parser, not a full shell. It catches the common forms, not every possible trick. The CI workflows are still the final gate.
+
+### Local CI with Preloop
+
+[Preloop](https://preloop.dev) runs the files in `.github/workflows/` on your machine, unchanged, inside a fast microVM. Think "GitHub Actions on your laptop". It runs against your working tree, uncommitted changes included.
+
+Lefthook runs the same pnpm scripts as CI, so it catches code problems. It doesn't catch workflow problems: broken YAML, a bad setup step, the e2e Docker stack not starting in a clean runner. Preloop runs the real workflow files, so "passes locally" really means "CI will pass".
+
+```sh
+# Run every pull_request workflow. Exits non-zero if any job fails.
+$ pnpm ci:local
+
+# Run just one workflow
+$ pnpm ci:local .github/workflows/typecheck.yml
+```
+
+`pnpm ci:local` finds the workflows itself: any file in `.github/workflows/` with a `pull_request` trigger, so a new PR workflow is covered with no extra setup. Deploy and release workflows (push to an env branch) aren't run.
+
+When every workflow passes on a clean working tree (nothing to commit), it writes a **pass stamp** with the current commit SHA to `.git/preloop-pass`. The stamp lives under `.git/`, so it's never committed. A run on one workflow, a failing run, or a run with uncommitted changes writes no stamp.
+
+#### Why agents are gated
+
+An agent that pushes, waits for CI, sees a failure, fixes and pushes again burns time and tokens. So the Claude Code hooks (see [AI agent hooks](#ai-agent-hooks)) block `git push`, `gh pr create` (and `gh api` calls that create a PR), `preloop push` and `preloop run --push` unless:
+
+- Preloop is installed, and
+- the working tree has no uncommitted changes, and
+- the pass stamp matches `HEAD`, and
+- the push only sends `HEAD` or the current branch. `git push --all`, `--mirror`, `--tags`, or a refspec like `other-branch:main` or `HEAD~5:x` is blocked, since the stamp only covers `HEAD`.
+
+The hooks also block Claude from writing the stamp itself with Edit/Write, or with a shell command that names it, like `echo ... > .git/preloop-pass`. A new commit makes the old stamp stale, so Claude has to run `pnpm ci:local` again.
+
+**These hooks stop accidental skips, not a determined agent.** They match command shapes, so an agent that builds the stamp path in pieces, writes it from a script, or puts a fake `preloop` first on `PATH` can get around them. Don't treat them as a security boundary. The real CI checks on GitHub are what catch bad code.
+
+When a push is blocked, Claude sees what to do: run `pnpm ci:local`, fix the failures, commit, then push. The [`run-ci-locally`](.claude/skills/run-ci-locally/SKILL.md) skill tells it how to read the failures.
+
+**Pushing by hand from your own terminal isn't gated.** Only Claude Code's tool calls are checked. Lefthook's pre-commit and pre-push hooks still run as usual.
+
+#### Known limitations
+
+- **Apple Silicon (M-series Macs):** Preloop [says](https://github.com/preloopdev/preloop#readme) Docker actions don't work yet on Apple Silicon, because amd64 images in the VM lack the Rosetta mount. `e2e.yml` starts a Docker Compose stack, so it may fail there. The gate doesn't skip e2e, so an agent on an M-series Mac may not be able to push until Preloop fixes this. If that's you, push by hand for now and tell the team.
+- **Linux needs KVM.** Preloop runs microVMs, so the machine needs `/dev/kvm`. A plain container or a cloud VM without nested virtualization can't run it.
+- **Disk:** about 80GB free for the runner VM image, and it grows. Preloop keeps its state (VM images, run data) in `~/.preloop` (or `$PRELOOP_HOME`) and doesn't clean up after itself yet. Check it now and then with `du -sh ~/.preloop`. Deleting that folder frees the space, but the next run downloads the image again and you have to redo `preloop setup`.
+- **Don't give Preloop secrets.** It stores any secret it's given (`preloop run --secret`, `preloop secret set`) on disk in its state folder, so repo secrets would sit on every developer's machine. `pnpm ci:local` passes none, and the PR workflows don't need any today. If a new PR workflow needs one, make that step skip on local runs (see below) instead of handing the secret to Preloop.
+- **PR-only steps skip locally.** A local run has no real PR, so steps that comment on or set a status on a PR (the coverage comment, React Doctor's comments and commit status) skip. They check `github.repository_id == 0`, which is what Preloop's engine reports. The tests and scans still run. On GitHub they post as before. `pnpm ci:local` passes each run a `pull_request` event payload with PR number 0 and the merge base with `origin/main` as the base SHA, so steps that diff against the base have one.
+- **Preloop comes from its GitHub release.** `mise.toml` pins `github:preloopdev/preloop`, and `mise.lock` records the sha256 of each platform's download, so `mise install` refuses a file that doesn't match. After changing any version in `mise.toml`, run `mise lock` and commit `mise.lock`.
+- **CI doesn't install Preloop.** Each workflow's `jdx/mise-action` step sets `MISE_DISABLE_TOOLS` so CI runners don't download it.
 
 ### Creating a new package
 

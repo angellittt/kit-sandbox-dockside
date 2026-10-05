@@ -1,5 +1,6 @@
 # Single source of truth for tool versions, locally and in CI.
-# Run `mise install` after cloning (or after changing a version here).
+# Run `mise install` after cloning. After changing a version here, run
+# `mise lock` (it records the checksums in mise.lock), then `mise install`.
 #
 # A few files can't read this file and keep a copy of a version instead:
 # - package.json "packageManager" (pnpm, needed by corepack and turbo)
@@ -22,3 +23,9 @@ lockfile = true
 node = "24.14.0"
 pnpm = "10.30.3"
 terraform = "1.16.4"
+# Runs .github/workflows locally (`pnpm ci:local`). Needed by anyone who
+# uses an AI agent in this repo, see "Local CI with Preloop" in the Readme.
+# Installed from Preloop's GitHub release (not the npm wrapper, whose
+# postinstall downloads the binary with no checksum check). mise.lock
+# records the sha256 of each platform's release asset.
+"github:preloopdev/preloop" = "0.33.7"

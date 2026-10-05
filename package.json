@@ -36,6 +36,8 @@
     "terraform:fmt": "mise x -- terraform -chdir=infra fmt -check -recursive",
     "terraform:validate": "mise x -- terraform -chdir=infra init -backend=false -input=false > /dev/null && mise x -- terraform -chdir=infra validate",
     "verify": "turbo run lint typecheck typecheck:root test",
+    "ci:local": "bash ./scripts/ci-local/ci-local.sh",
+    "test:ci-local": "bash ./scripts/ci-local/ci-local.test.sh",
     "check:tool-versions": "bash ./scripts/tool-versions/check-tool-versions.sh",
     "test:tool-versions": "bash ./scripts/tool-versions/check-tool-versions.test.sh",
     "check:hook-parity": "bash ./scripts/hook-parity/check-hook-parity.sh",

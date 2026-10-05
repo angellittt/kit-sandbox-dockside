@@ -20,6 +20,9 @@ runs:
       with:
         version: 2026.9.16
         sha256: b6f8757201f6a2ee799f45f3f52ef7ca0b4071523637dc3b0b24264dd3333518
+      # Preloop (also in mise.toml) is for running workflows locally, not in CI.
+      env:
+        MISE_DISABLE_TOOLS: github:preloopdev/preloop
 
     # mise-action caches the tools, not pnpm's package store.
     - id: pnpm-store

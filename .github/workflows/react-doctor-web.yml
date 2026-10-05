@@ -39,3 +39,9 @@ jobs:
           directory: apps/web
           scope: changed
           blocking: none
+          # The scan always runs. Comments and the commit status only post on a
+          # real PR: `pnpm ci:local` runs this with Preloop, whose engine reports
+          # repository id 0.
+          comment: ${{ github.repository_id != 0 && 'true' || 'false' }}
+          review-comments: ${{ github.repository_id != 0 && 'true' || 'false' }}
+          commit-status: ${{ github.repository_id != 0 && 'true' || 'false' }}
