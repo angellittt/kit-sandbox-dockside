@@ -50,10 +50,10 @@ jobs:
       - name: Test hook and CI parity check
         run: pnpm test:hook-parity
 
-      # ci-local.sh must work on macOS's default /bin/bash (3.2), and the
+      # ci-local.sh and serve.sh must work on macOS's default /bin/bash (3.2), and the
       # runner's bash is 5, so run its tests in a bash 3.2 container.
       - name: Test ci:local under bash 3.2
         run: >-
           docker run --rm -v "$PWD:/repo:ro" -w /repo
           bash:3.2@sha256:0fd7cb8499c63a3c9345e7088a9cd83bb69f6e895e83833859aff838a0312091
-          sh -c 'apk add --no-cache -q git && bash scripts/ci-local/ci-local.test.sh'
+          sh -c 'apk add --no-cache -q git && bash scripts/ci-local/ci-local.test.sh && bash scripts/ci-local/serve.test.sh'

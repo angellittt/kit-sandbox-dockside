@@ -40,5 +40,6 @@ You can't `git push` or `gh pr create` in this repo until every pull_request wor
 ## When to stop and ask the developer
 
 - `pnpm ci:local` says Preloop isn't installed, or its GitHub auth isn't set up. Show them the setup steps it printed (`mise install`, `preloop setup github --via pat --repo <owner>/<repo>`, about 80GB free disk). You can't do this for them.
+- Jobs stay `Queued` with "no registered runner ... can claim the queued jobs". The engine isn't running, or it was started with plain `preloop serve` and has no runner pool. Ask the developer to run `pnpm ci:serve` in another terminal and leave it running. It's long-lived, so don't start it yourself.
 - The machine can't run it: no `/dev/kvm` on Linux, not enough disk, or a `rosetta-wrapper` error on an Apple Silicon Mac (Preloop can't run Docker actions there yet, so `e2e.yml` fails). Tell the developer. They can push by hand from their own terminal.
 - The same failure keeps coming back after two or three honest fixes, or it's in code you don't own. Explain what you found instead of looping.

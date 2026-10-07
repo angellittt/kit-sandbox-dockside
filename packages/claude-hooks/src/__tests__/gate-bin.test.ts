@@ -53,7 +53,8 @@ beforeAll(() => {
 
 afterAll(() => rmSync(tmp, { recursive: true, force: true }));
 
-describe("push gate (as Claude Code runs it)", () => {
+// Skipped while PUSH_GATE_ENABLED is false in bin/pre-bash.ts.
+describe.skip("push gate (as Claude Code runs it)", () => {
   it("blocks git push until pnpm ci:local has passed", () => {
     const result = push();
     expect(result.status).toBe(2);
@@ -83,7 +84,9 @@ describe("push gate (as Claude Code runs it)", () => {
     expect(result.status).toBe(2);
     expect(result.stderr).toContain("mise install");
   });
+});
 
+describe("pre-bash hook", () => {
   it("blocks writing the stamp from Bash", () => {
     const result = runHook("pre-bash", {
       cwd: repo,

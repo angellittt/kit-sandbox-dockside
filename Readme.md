@@ -83,6 +83,8 @@ $ pnpm build
 
 #### 4. Set up Preloop (required if you use an AI agent)
 
+> **The push gate is off for now** (see [Why agents are gated](#why-agents-are-gated)). You can skip this step until it is back on.
+
 Claude Code can't push or open a PR in this repo until every PR check passes locally in [Preloop](https://preloop.dev) (see [Local CI with Preloop](#local-ci-with-preloop)). A hook blocks its push and PR commands. It is best-effort, and pushes you type in your own terminal aren't gated. Most of the team uses an agent, so treat this as a normal setup step. `mise install` already installed the `preloop` CLI.
 
 ```sh
@@ -94,7 +96,14 @@ $ preloop setup github --via pat --repo tttstudios/Fullstack-starter-template
 
 # Check it worked
 $ preloop doctor --repo tttstudios/Fullstack-starter-template
+
+# Start the engine and leave it running in its own terminal
+$ pnpm ci:serve
 ```
+
+`pnpm ci:serve` runs `preloop serve` with Preloop's Linux guest runner, the binary each job's microVM runs. `mise install` only fetches the CLI, so plain `preloop serve` starts with "no runner pool" and `pnpm ci:local` jobs stay queued forever. The script downloads the runner matching your `preloop version`, checks its sha256, and keeps it under `~/.preloop/runner/`. It warns if your `preloop` isn't the version `mise.toml` pins (for example after `preloop update`).
+
+It also keeps one runner VM booted and waiting (a warm pool), so `pnpm ci:local` jobs start right away instead of waiting through a cold boot of the runner image. After each job the engine boots a fresh one in the background. Each runner reserves 8 vCPUs and 4GB of RAM; set `PRELOOP_RUNNER_POOL_ENABLED=false` to turn the pool off, or `PRELOOP_RUNNER_POOL_SIZE=2` to keep more runners ready.
 
 Keep **about 80GB of disk free**. The first run downloads the GitHub runner VM image (about 9GB) and unpacks it to almost 50GB. See [Preloop's setup docs](https://github.com/preloopdev/preloop/blob/main/docs/setup.md) for which PAT permissions to grant.
 
@@ -317,7 +326,10 @@ Things to know:
 Lefthook runs the same pnpm scripts as CI, so it catches code problems. It doesn't catch workflow problems: broken YAML, a bad setup step, the e2e Docker stack not starting in a clean runner. Preloop runs the real workflow files, so "passes locally" really means "CI will pass".
 
 ```sh
-# Run every pull_request workflow. Exits non-zero if any job fails.
+# In one terminal: start the engine and leave it running
+$ pnpm ci:serve
+
+# In another: run every pull_request workflow. Exits non-zero if any job fails.
 $ pnpm ci:local
 
 # Run just one workflow
@@ -329,6 +341,8 @@ $ pnpm ci:local .github/workflows/typecheck.yml
 When every workflow passes on a clean working tree (nothing to commit), it writes a **pass stamp** with the current commit SHA to `.git/preloop-pass`. The stamp lives under `.git/`, so it's never committed. A run on one workflow, a failing run, or a run with uncommitted changes writes no stamp.
 
 #### Why agents are gated
+
+> **Push gate is off for now.** Preloop is failing ([preloopdev/preloop#371](https://github.com/preloopdev/preloop/issues/371)), so the hook no longer blocks Claude's pushes and PRs. The pass stamp guard and the other hooks still run. Once a fixed Preloop version is pinned in `mise.toml`, set `PUSH_GATE_ENABLED` back to `true` in `packages/claude-hooks/src/bin/pre-bash.ts` and remove the `.skip` on the push gate tests in `gate-bin.test.ts`.
 
 An agent that pushes, waits for CI, sees a failure, fixes and pushes again burns time and tokens. So the Claude Code hooks (see [AI agent hooks](#ai-agent-hooks)) block `git push`, `gh pr create` (and `gh api` calls that create a PR), `preloop push` and `preloop run --push` unless:
 

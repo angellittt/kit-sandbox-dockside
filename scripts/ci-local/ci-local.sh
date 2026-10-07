@@ -38,7 +38,8 @@ Preloop setup (needed by anyone who uses an AI agent in this repo):
   1. Install the pinned tools, Preloop included:  mise install
   2. Connect Preloop to GitHub with a fine-grained PAT:
        preloop setup github --via pat --repo ${SLUG:-<owner>/<repo>}
-  3. Keep about 80GB of disk free. The first run downloads and unpacks the
+  3. Start the engine and leave it running in another terminal:  pnpm ci:serve
+  4. Keep about 80GB of disk free. The first run downloads and unpacks the
      GitHub runner VM image.
 See "Local CI with Preloop" in the Readme.
 MSG
