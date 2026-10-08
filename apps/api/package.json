@@ -30,7 +30,7 @@
     "vitest": "^4.1.11"
   },
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch --env-file-if-exists=../../.env src/index.ts",
     "build": "tsc --project tsconfig.app.json",
     "typecheck": "tsc -b --noEmit",
     "test": "vitest run",

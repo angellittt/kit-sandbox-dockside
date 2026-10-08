@@ -5,6 +5,10 @@ services:
       context: .
       dockerfile: ./apps/web/Dockerfile
       target: development
+    # Optional shared root .env (copy .env.example). Starts fine without it.
+    env_file:
+      - path: .env
+        required: false
     ports:
       - 5173:5173
     networks:
@@ -26,6 +30,10 @@ services:
       context: .
       dockerfile: ./apps/api/Dockerfile
       target: development
+    # Optional shared root .env (copy .env.example). Starts fine without it.
+    env_file:
+      - path: .env
+        required: false
     ports:
       - 8000:8000
     networks:

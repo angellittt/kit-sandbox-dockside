@@ -134,9 +134,30 @@ CI runs the same check, and its tests (`pnpm test:tool-versions`), in the Typech
 
 ### Environment variables
 
-Neither app requires an environment variable to run the default stack locally — `docker-compose-dev.yml` and `docker-compose.yml` work out of the box.
+Every variable the apps read is listed in [`.env.example`](.env.example) at the repo root, with a comment and a safe example value. Nothing is required: each variable has a default, so `pnpm compose:dev:up`, `pnpm dev:no-docker` and the tests all run without a `.env` file.
 
-As an app needs configuration (an API base URL, a feature flag, a service credential), document it in a single root-level `.env.example` (with a `.env.test` counterpart for CI, using safe fixture values) rather than one file per app. `docker-compose-dev.yml` mounts that one shared `.env` into every service that needs it — keep it that way even as more variables get added, so there's one place to look instead of hunting through each app's folder.
+To change a value locally, copy the example and edit your copy. Git ignores `.env`, so it's never committed:
+
+```sh
+$ cp .env.example .env
+```
+
+| File           | Committed | Who reads it                                                                                                                                                              |
+| -------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.env.example` | Yes       | People. It documents every variable. No app loads it                                                                                                                      |
+| `.env`         | No        | The web app (Vite reads it from the root), the api in `pnpm dev:no-docker` (`--env-file-if-exists`), and both services in `docker-compose-dev.yml` (`env_file`, optional) |
+| `.env.test`    | Yes       | Vite and Vitest in test mode, so unit tests and CI get the same safe fixture values                                                                                       |
+
+Keep it one shared set of files at the root, not one per app, so there's one place to look. When you add a variable:
+
+1. Read it in the app (on the api, through `requiredEnv` or `getServerConfigFromEnvVars` in `apps/api/src/config`).
+2. Add it to `.env.example` with a one-line comment and a safe example value.
+3. Add a safe fixture value to `.env.test` if tests need it.
+4. If it changes a cached turbo task's output, add it to that task's `env` list in `turbo.json`.
+
+Never put a real secret in `.env.example` or `.env.test`. Deployed environments get their values from the deploy workflows and Key Vault, not from these files.
+
+Playwright (`playwright.config.ts`) doesn't read `.env`. `BASE_URL` and `API_URL` come from your shell, and `docker-compose-e2e.yml` sets them for the e2e stack.
 
 ### Docker & Containerization
 
