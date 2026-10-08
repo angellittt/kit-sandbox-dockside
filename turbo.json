@@ -1,6 +1,7 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
   "ui": "tui",
+  "agentGuidance": false,
   "globalEnv": ["CI", "API_URL", "BASE_URL"],
   "tasks": {
     "dev": {

@@ -7,6 +7,11 @@
 # version is hardcoded anywhere else, or if a GitHub workflow/action sets up
 # Node/pnpm on its own instead of using jdx/mise-action.
 #
+# turbo isn't a mise tool, so its source of truth is pnpm-lock.yaml. The app
+# Dockerfiles install turbo globally for `turbo prune` before any install, and
+# must pin that copy to the lockfile version. An older turbo can reject keys in
+# turbo.json that the repo's turbo accepts.
+#
 # Usage: check-tool-versions.sh [repo-root]  (defaults to this repo)
 
 set -euo pipefail
@@ -84,6 +89,10 @@ fi
 grep -qxF "engineStrict: true" "$ROOT/pnpm-workspace.yaml" 2>/dev/null ||
   error "pnpm-workspace.yaml must set engineStrict: true so package.json engines is enforced"
 
+# The `turbo@x.y.z:` key under the lockfile's packages section.
+TURBO_VERSION="$(sed -n 's/^  turbo@\([0-9][^:(]*\):$/\1/p' "$ROOT/pnpm-lock.yaml" 2>/dev/null | head -n1)"
+[ -n "$TURBO_VERSION" ] || error "pnpm-lock.yaml has no turbo version"
+
 for dockerfile in apps/api/Dockerfile apps/web/Dockerfile Dockerfile.test; do
   [ -f "$ROOT/$dockerfile" ] || continue
 
@@ -94,6 +103,19 @@ for dockerfile in apps/api/Dockerfile apps/web/Dockerfile Dockerfile.test; do
   if [ -n "$PNPM_VERSION" ] &&
     ! grep -qxF "ARG PNPM_VERSION=${PNPM_VERSION}" "$ROOT/$dockerfile"; then
     error "$dockerfile ARG PNPM_VERSION does not match mise.toml pnpm ${PNPM_VERSION}"
+  fi
+
+  grep -qE 'add turbo' "$ROOT/$dockerfile" || continue
+  # Checks every turbo@ argument, so a second hardcoded install on the same line is caught too.
+  # shellcheck disable=SC2016 # ${TURBO_VERSION} is the literal Dockerfile text
+  if grep -qE 'add turbo( |$)' "$ROOT/$dockerfile"; then
+    error "$dockerfile installs turbo without a version (use turbo@\${TURBO_VERSION})"
+  elif grep -oE 'turbo@[^[:space:]]+' "$ROOT/$dockerfile" | grep -qvxF 'turbo@${TURBO_VERSION}'; then
+    error "$dockerfile installs a hardcoded turbo version (use turbo@\${TURBO_VERSION})"
+  fi
+  if [ -n "$TURBO_VERSION" ] &&
+    ! grep -qxF "ARG TURBO_VERSION=${TURBO_VERSION}" "$ROOT/$dockerfile"; then
+    error "$dockerfile ARG TURBO_VERSION does not match pnpm-lock.yaml turbo ${TURBO_VERSION}"
   fi
 done
 
@@ -107,4 +129,4 @@ if [ "$ERRORS" -gt 0 ]; then
   exit 1
 fi
 
-echo "Tool versions match mise.toml (node ${NODE_VERSION}, pnpm ${PNPM_VERSION}, terraform ${TERRAFORM_VERSION})."
+echo "Tool versions match mise.toml (node ${NODE_VERSION}, pnpm ${PNPM_VERSION}, terraform ${TERRAFORM_VERSION}, turbo ${TURBO_VERSION})."

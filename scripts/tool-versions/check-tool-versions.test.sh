@@ -58,8 +58,18 @@ ARG NODE_VERSION=24.14.0
 FROM node:${NODE_VERSION}-alpine AS base
 ARG PNPM_VERSION=10.30.3
 RUN corepack prepare pnpm@${PNPM_VERSION} --activate
+ARG TURBO_VERSION=2.11.5
+RUN pnpm add turbo@${TURBO_VERSION} --global
 DOCKER
   done
+  cat > "$repo/pnpm-lock.yaml" <<'YAML'
+lockfileVersion: '9.0'
+
+packages:
+
+  turbo@2.11.5:
+    resolution: {integrity: sha512-x}
+YAML
   cat > "$repo/Dockerfile.test" <<'DOCKER'
 ARG NODE_VERSION=24.14.0
 FROM node:${NODE_VERSION}-alpine
@@ -366,6 +376,46 @@ YAML
   expect_failure "$repo" action-node ".github/actions/setup/action.yml"
 }
 
+test_fails_on_dockerfile_turbo_drift() {
+  local repo="$TEST_TMP/turbo-drift"
+  create_repo "$repo"
+  replace 's/TURBO_VERSION=2.11.5/TURBO_VERSION=2.10.11/' "$repo/apps/web/Dockerfile"
+
+  expect_failure "$repo" turbo-drift "apps/web/Dockerfile ARG TURBO_VERSION"
+}
+
+test_fails_on_unpinned_dockerfile_turbo() {
+  local repo="$TEST_TMP/turbo-unpinned"
+  create_repo "$repo"
+  replace 's/turbo@${TURBO_VERSION}/turbo/' "$repo/apps/api/Dockerfile"
+
+  expect_failure "$repo" turbo-unpinned "apps/api/Dockerfile installs turbo without"
+}
+
+test_fails_on_hardcoded_dockerfile_turbo() {
+  local repo="$TEST_TMP/turbo-hardcoded"
+  create_repo "$repo"
+  replace 's/turbo@${TURBO_VERSION}/turbo@2.10.11/' "$repo/apps/api/Dockerfile"
+
+  expect_failure "$repo" turbo-hardcoded "apps/api/Dockerfile installs a hardcoded turbo version"
+}
+
+test_fails_on_second_hardcoded_turbo_on_one_line() {
+  local repo="$TEST_TMP/turbo-two-installs"
+  create_repo "$repo"
+  replace 's/--global$/--global \&\& pnpm add turbo@2.10.11 --global/' "$repo/apps/api/Dockerfile"
+
+  expect_failure "$repo" turbo-two-installs "apps/api/Dockerfile installs a hardcoded turbo version"
+}
+
+test_fails_when_lockfile_has_no_turbo() {
+  local repo="$TEST_TMP/turbo-lock"
+  create_repo "$repo"
+  replace '/turbo@/d' "$repo/pnpm-lock.yaml"
+
+  expect_failure "$repo" turbo-lock "pnpm-lock.yaml has no turbo"
+}
+
 test_fails_when_mise_toml_missing_a_tool() {
   local repo="$TEST_TMP/missing-tool"
   create_repo "$repo"
@@ -404,6 +454,11 @@ tests=(
   test_fails_on_hardcoded_workflow_node_version
   test_fails_on_workflow_pnpm_action_setup
   test_fails_on_setup_node_in_composite_action
+  test_fails_on_dockerfile_turbo_drift
+  test_fails_on_unpinned_dockerfile_turbo
+  test_fails_on_hardcoded_dockerfile_turbo
+  test_fails_on_second_hardcoded_turbo_on_one_line
+  test_fails_when_lockfile_has_no_turbo
   test_fails_when_mise_toml_missing_a_tool
   test_passes_on_real_repo
 )

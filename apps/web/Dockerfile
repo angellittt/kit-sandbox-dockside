@@ -12,7 +12,10 @@ WORKDIR /app
 
 FROM base AS prepare
 
-RUN pnpm add turbo --global 
+# Keep in sync with turbo in pnpm-lock.yaml (checked by `pnpm check:tool-versions`).
+# An older global turbo can reject keys in turbo.json.
+ARG TURBO_VERSION=2.11.5
+RUN pnpm add turbo@${TURBO_VERSION} --global
 COPY . .
 RUN turbo prune web --docker
 
