@@ -14,7 +14,9 @@ import tsParser from "@typescript-eslint/parser";
 import { configs as preferArrowFunctionsConfigs } from "eslint-plugin-prefer-arrow-functions";
 
 export default defineConfig([
-  globalIgnores(["dist"]),
+  // Tests write and then delete coverage/ while `pnpm verify` lints the same
+  // package in parallel. Linting it races the delete and crashes with ENOENT.
+  globalIgnores(["dist", "coverage"]),
   {
     // A stale eslint-disable comment hides nothing, but it misleads readers
     // and silently re-enables suppression if the rule comes back.
