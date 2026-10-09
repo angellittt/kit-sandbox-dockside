@@ -1,5 +1,5 @@
 {
-  "setup": "awaiting-design",
+  "designSystem": "https://claude.ai/artifact/Pdu5Lz6f9ZLLPgVJkMvbA6",
   "tracker": "https://app.clickup.com/8593845/v/l/li/901115532915",
   "schema": "ttt-ds/1",
   "profile": "shadcn",
@@ -8,7 +8,7 @@
   "tokensIn": ".ttt/tokens.json",
   "systemIn": ".ttt/system.md",
   "tokensOut": "src/styles/ds-tokens.css",
-  "lastSynced": "2026-10-09T17:28:10Z",
+  "lastSynced": "2026-10-09T18:44:51Z",
   "typeClassPrefix": "type-",
   "namespace": "Dockside",
   "bundleExtras": {
