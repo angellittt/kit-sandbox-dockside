@@ -1,6 +1,7 @@
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import svgr from "vite-plugin-svgr";
 
@@ -14,7 +15,7 @@ export default defineConfig({
   // svgr() lets `import Icon from "./icon.svg?react"` yield a React
   // component instead of a URL string - see
   // src/assets/icons/__tests__/example.test.tsx for a working example.
-  plugins: [react(), tsconfigPaths(), svgr()],
+  plugins: [react(), tailwindcss(), tsconfigPaths(), svgr()],
   envDir,
   server: {
     watch: {

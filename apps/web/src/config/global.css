@@ -1,3 +1,8 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+
 *,
 *::before,
 *::after {
@@ -71,4 +76,60 @@ h6 {
   position: absolute;
   white-space: nowrap;
   width: 1px;
+}
+
+/* design-system-kit 0.12.0 · profile shadcn · wiring: theme block
+ *
+ * Setup replaces ONLY shadcn's theme variable block in the global CSS
+ * (`:root { --background: … }`, `.dark { … }` and shadcn's `@theme inline`)
+ * with this. Keep the file's own `@import "tailwindcss"`, `tw-animate-css`
+ * and `shadcn/tailwind.css` lines above it.
+ *
+ * Setup fills the two paths: `@source` is the source directory relative to
+ * the global CSS (e.g. "../"), and `@import` is the path from the global CSS
+ * to `tokensOut` (e.g. "../styles/ds-tokens.css").
+ */
+
+/* Automatic source detection walks up from this file and can miss the
+ * source directory (or scan markdown). Declare the scan root explicitly. */
+@source "../";
+
+/* Design-system tokens — GENERATED from .ttt/tokens.json by
+ * scripts/ds-tokens.mjs. Every token, the shadcn variables that alias them,
+ * the Tailwind @theme mapping and the type classes. Never edit by hand. */
+@import "../styles/ds-tokens.css";
+
+/* Font faces and --font-* variables (unlayered), after the token file. */
+@import "../styles/fonts.css";
+
+/* Themes key on [data-theme] (next-themes, attribute="data-theme"), not a
+ * .dark class, because that is what the generated token file emits. */
+@custom-variant dark (&:is([data-theme="dark"] *));
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+
+  /* design-system-kit 0.12.0 · profile shadcn · wiring: focus rule
+   *
+   * One focus treatment for every focusable control: a 2px solid ring with a
+   * 2px offset. Components don't carry their own focus-visible outline or ring
+   * utilities; where a parent clips the outline they set only an inset offset
+   * (`focus-visible:-outline-offset-2`).
+   *
+   * Don't add `outline-none` to a focusable control: in Tailwind v4 it sets
+   * --tw-outline-style: none, and the ring then renders with style none.
+   * Text fields keep stock's border + ring treatment, which replaces it.
+   *
+   * Append inside the global CSS's `@layer base { … }`.
+   */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
 }

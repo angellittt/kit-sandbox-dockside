@@ -67,3 +67,8 @@ tsconfig*.tsbuildinfo
 
 # Terraform code
 *.tf
+# design-system-kit: kit-owned and generated files stay byte for byte
+apps/web/.ttt/
+apps/web/scripts/ds-validate.mjs
+apps/web/scripts/ds-drift.test.mjs
+apps/web/src/styles/ds-tokens.css
