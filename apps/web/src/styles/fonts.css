@@ -23,6 +23,8 @@
 /* A family with a package, e.g.:
 @import "@fontsource-variable/{{PACKAGE}}";
 */
+@import "@fontsource-variable/manrope";
+@import "@fontsource-variable/inter";
 
 /* A family without one — one per font file, e.g.:
 @font-face {
@@ -38,4 +40,6 @@
   /* Only the families that load a face, e.g.:
   --font-sans: "{{SANS_FAMILY}}";
   */
+  --font-display: "Manrope Variable";
+  --font-sans: "Inter Variable";
 }
